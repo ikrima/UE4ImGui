@@ -17,11 +17,9 @@
 
 #if WITH_EDITOR
 // Global ImGui context pointer.
-ImGuiContext* GImGuiContextPtr = nullptr;
+IMGUI_API ImGuiContext* GImGuiContextPtr = nullptr;
 // Handle to the global ImGui context pointer.
-ImGuiContext** GImGuiContextPtrHandle = &GImGuiContextPtr;
-// Get the global ImGui context pointer (GImGui) indirectly to allow redirections in obsolete modules.
-#define GImGui (*GImGuiContextPtrHandle)
+IMGUI_API ImGuiContext** GImGuiContextPtrHandle = &GImGuiContextPtr;
 #endif // WITH_EDITOR
 
 #if PLATFORM_WINDOWS

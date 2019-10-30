@@ -46,12 +46,6 @@
 # define __IMGUI_EX_CANVAS_H__
 # pragma once
 
-#if WITH_EDITOR
-// Get the global ImGui context pointer (GImGui) indirectly to allow redirections in obsolete modules.
-extern struct ImGuiContext** GImGuiContextPtrHandle;
-#define GImGui (*GImGuiContextPtrHandle)
-#endif // WITH_EDITOR
-
 
 # include <imgui.h>
 # include <imgui_internal.h> // ImRect, ImFloor

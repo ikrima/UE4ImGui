@@ -11,12 +11,6 @@
 # define __IMGUI_NODE_EDITOR_INTERNAL_H__
 # pragma once
 
-#if WITH_EDITOR
-// Get the global ImGui context pointer (GImGui) indirectly to allow redirections in obsolete modules.
-extern struct ImGuiContext** GImGuiContextPtrHandle;
-#define GImGui (*GImGuiContextPtrHandle)
-#endif // WITH_EDITOR
-
 //------------------------------------------------------------------------------
 # include "imgui_node_editor.h"
 

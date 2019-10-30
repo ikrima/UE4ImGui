@@ -2,6 +2,13 @@
 
 #pragma once
 
+#if WITH_EDITOR
+extern IMGUI_API struct ImGuiContext* GImGuiContextPtr;
+extern IMGUI_API struct ImGuiContext** GImGuiContextPtrHandle;
+// Get the global ImGui context pointer (GImGui) indirectly to allow redirections in obsolete modules.
+#define GImGui (*GImGuiContextPtrHandle)
+#endif
+
 #include "ImGuiDelegates.h"
 #include "ImGuiModuleProperties.h"
 #include "ImGuiTextureHandle.h"

@@ -12,7 +12,7 @@ class FImGuiInputState
 public:
 
 	// Characters buffer.
-	using FCharactersBuffer = ImGuiInterops::ImGuiTypes::FInputCharactersBuffer;
+	using FCharactersBuffer = ImGuiInterops::ImGuiTypes::FLegacyInputCharactersBuffer;
 
 	// Array for mouse button states.
 	using FMouseButtonsArray = ImGuiInterops::ImGuiTypes::FMouseButtonsArray;

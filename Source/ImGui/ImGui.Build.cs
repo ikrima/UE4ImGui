@@ -36,6 +36,9 @@ public class ImGui : ModuleRules
                 Path.Combine(ModuleDirectory, "../ThirdParty/ImGuiLibrary/Include/misc/fonts"),
                 Path.Combine(ModuleDirectory, "../ThirdParty/ImGuiLibrary/Include/misc/freetype"),
 				// ... add public include paths required here ...
+                Path.Combine(ModuleDirectory, "ThirdParty/IconFontCppHeaders/Public"),
+                Path.Combine(ModuleDirectory, "ThirdParty/ImGuiAlFonts/Public"),
+                Path.Combine(ModuleDirectory, "ThirdParty/ImGuiNodeEditor/Include"),
 			}
 			);
 
@@ -44,7 +47,11 @@ public class ImGui : ModuleRules
 			new string[] {
 				"ImGui/Private",
 				"ThirdParty/ImGuiLibrary/Private",
+                "ThirdParty/ImGuiLibrary/Private/misc/cpp",
+                "ThirdParty/ImGuiLibrary/Private/misc/fonts",
+                "ThirdParty/ImGuiLibrary/Private/misc/freetype",
 				// ... add other private include paths required here ...
+                "ImGui/ThirdParty/ImGuiNodeEditor/Private",
             }
 			);
 

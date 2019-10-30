@@ -266,7 +266,13 @@ namespace ImGuiInterops
 
 		if (InputState.GetCharactersNum() > 0)
 		{
-			Copy(InputState.GetCharacters(), IO.InputCharacters);
+            const ImGuiInterops::ImGuiTypes::FLegacyInputCharactersBuffer& characterBuff = InputState.GetCharacters();
+            for (int i = 0; i < ImGuiInterops::ImGuiTypes::FLegacyInputCharactersBufferCount; ++i)
+            {
+                if (characterBuff[i] == 0)
+                { break; }
+                IO.AddInputCharacter(characterBuff[i]);
+            }
 		}
 
 		if (InputState.IsGamepadNavigationEnabled() && InputState.HasGamepad())

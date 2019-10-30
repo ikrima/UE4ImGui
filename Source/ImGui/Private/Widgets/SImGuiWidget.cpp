@@ -733,7 +733,7 @@ void SImGuiWidget::OnDebugDraw()
 	if (CVars::DebugWidget.GetValueOnGameThread() > 0)
 	{
 		bool bDebug = true;
-		ImGui::SetNextWindowSize(ImVec2(380, 480), ImGuiSetCond_Once);
+		ImGui::SetNextWindowSize(ImVec2(380, 480), ImGuiCond_Once);
 		if (ImGui::Begin("ImGui Widget Debug", &bDebug))
 		{
 			ImGui::Spacing();
@@ -784,7 +784,7 @@ void SImGuiWidget::OnDebugDraw()
 		FImGuiInputState& InputState = ContextProxy->GetInputState();
 
 		bool bDebug = true;
-		ImGui::SetNextWindowSize(ImVec2(460, 480), ImGuiSetCond_Once);
+		ImGui::SetNextWindowSize(ImVec2(460, 480), ImGuiCond_Once);
 		if (ImGui::Begin("ImGui Input State", &bDebug))
 		{
 			const ImVec4 HiglightColor{ 1.f, 1.f, 0.5f, 1.f };

@@ -2,10 +2,21 @@
 
 // Module-wide macros
 #include "VersionCompatibility.h"
+
+struct ImGuiContext;
+
 #include "ImGuiModuleDebug.h"
 
 // Module
 #include "ImGuiModule.h"
+
+#if WITH_EDITOR
+extern IMGUI_API ImGuiContext* GImGuiContextPtr;
+extern IMGUI_API ImGuiContext** GImGuiContextPtrHandle;
+// Get the global ImGui context pointer (GImGui) indirectly to allow redirections in obsolete modules.
+#define GImGui (*GImGuiContextPtrHandle)
+#endif
+#include "imgui.h"
 
 // Engine
 #include <Core.h>

@@ -4,6 +4,7 @@
 
 #include <Delegates/Delegate.h>
 #include <UObject/Object.h>
+#include "Engine/DeveloperSettings.h"
 
 #include "ImGuiModuleSettings.generated.h"
 
@@ -47,22 +48,33 @@ struct FImGuiKeyInfo
 	}
 };
 
-// UObject used for loading and saving ImGui settings. To access actual settings use FImGuiModuleSettings interface.
-UCLASS(config=ImGui, defaultconfig)
-class UImGuiSettings : public UObject
+// Configure the Unreal ImGui plugin.
+UCLASS(config=ES2Subsystem, defaultconfig)
+class UImGuiSettings : public UDeveloperSettings
 {
+// UObject used for loading and saving ImGui settings. To access actual settings use FImGuiModuleSettings interface.
 	GENERATED_BODY()
 
 public:
+    UImGuiSettings();
 
-	// Get default instance or null if it is not loaded.
-	static UImGuiSettings* Get() { return DefaultInstance; }
+#if WITH_EDITOR
+    /** Gets the section text, uses the classes DisplayName by default. */
+    virtual FText GetSectionText() const override { return NSLOCTEXT("ImGui", "ImGui", "ImGui"); }
+#endif
+    virtual FName GetContainerName() const override
+    {
+        static const FName projectName(TEXT("Project"));
+        return projectName;
+    }
 
 	// Delegate raised when default instance is loaded.
 	static FSimpleMulticastDelegate OnSettingsLoaded;
 
-	virtual void PostInitProperties() override;
-	virtual void BeginDestroy() override;
+    virtual void PostInitProperties() override;
+#if WITH_EDITOR
+    virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+#endif
 
 protected:
 
@@ -102,12 +114,6 @@ protected:
 	// This binding is using Player Input's DebugExecBindings which only works in non-shipment builds.
 	UPROPERTY(EditAnywhere, config, Category = "Keyboard Shortcuts")
 	FImGuiKeyInfo ToggleInput;
-
-	// Deprecated name for ToggleInput. Kept temporarily to automatically move old configuration.
-	UPROPERTY(config)
-	FImGuiKeyInfo SwitchInputModeKey_DEPRECATED;
-
-	static UImGuiSettings* DefaultInstance;
 
 	friend class FImGuiModuleSettings;
 };

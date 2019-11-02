@@ -9,5 +9,6 @@ public class ImGuiLibrary : ModuleRules
 #endif
 	{
 		Type = ModuleType.External;
+        PublicDefinitions.Add("WITH_IMGUI=1");
 	}
 }

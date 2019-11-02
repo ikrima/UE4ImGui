@@ -25,6 +25,7 @@ public class ImGui : ModuleRules
 
 		PCHUsage     = PCHUsageMode.UseExplicitOrSharedPCHs;
         bEnforceIWYU = false;
+        bFasterWithoutUnity = true;
 
 #if UE_4_21_OR_LATER
 		PrivatePCHHeaderFile = "Private/ImGuiPrivatePCH.h";
@@ -40,7 +41,8 @@ public class ImGui : ModuleRules
                 Path.Combine(ModuleDirectory, "ThirdParty/IconFontCppHeaders/Public"),
                 Path.Combine(ModuleDirectory, "ThirdParty/ImGuiAlFonts/Public"),
                 Path.Combine(ModuleDirectory, "ThirdParty/ImGuiNodeEditor/Include"),
-			}
+                Path.Combine(ModuleDirectory, "ThirdParty/NelariusImNodes/Public"),
+            }
 			);
 
 
@@ -53,6 +55,7 @@ public class ImGui : ModuleRules
                 "ThirdParty/ImGuiLibrary/Private/misc/freetype",
 				// ... add other private include paths required here ...
                 "ImGui/ThirdParty/ImGuiNodeEditor/Private",
+                "ImGui/ThirdParty/NelariusImNodes/Private",
             }
 			);
 

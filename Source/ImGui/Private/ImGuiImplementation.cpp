@@ -1,6 +1,8 @@
 // Distributed under the MIT License (MIT) (see accompanying LICENSE file)
 
 #include "ImGuiPrivatePCH.h"
+#define IMGUI_DEFINE_MATH_OPERATORS
+#include "imgui_internal.h"
 
 // We build ImGui source code as part of this module. This is for convenience (no need to manually build libraries for
 // different target platforms) but it also exposes the whole ImGui source for inspection, which can be pretty handy.

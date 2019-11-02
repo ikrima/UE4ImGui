@@ -49,20 +49,6 @@ FImGuiEditor::~FImGuiEditor()
 
 void FImGuiEditor::Register()
 {
-	// Only register after UImGuiSettings class is initialized (necessary to check in early loading stages).
-	if (!bSettingsRegistered && UImGuiSettings::Get())
-	{
-		if (ISettingsModule* SettingsModule = GetSettingsModule())
-		{
-			bSettingsRegistered = true;
-
-			SettingsModule->RegisterSettings(SETTINGS_CONTAINER,
-				LOCTEXT("ImGuiSettingsName", "ImGui"),
-				LOCTEXT("ImGuiSettingsDescription", "Configure the Unreal ImGui plugin."),
-				UImGuiSettings::Get());
-		}
-	}
-
 	if (!bCustomPropertyTypeLayoutsRegistered)
 	{
 		if (FPropertyEditorModule* PropertyModule = GetPropertyEditorModule())
@@ -77,16 +63,6 @@ void FImGuiEditor::Register()
 
 void FImGuiEditor::Unregister()
 {
-	if (bSettingsRegistered)
-	{
-		bSettingsRegistered = false;
-
-		if (ISettingsModule* SettingsModule = GetSettingsModule())
-		{
-			SettingsModule->UnregisterSettings(SETTINGS_CONTAINER);
-		}
-	}
-
 	if (bCustomPropertyTypeLayoutsRegistered)
 	{
 		bCustomPropertyTypeLayoutsRegistered = false;

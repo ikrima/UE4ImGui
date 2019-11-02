@@ -12,56 +12,42 @@
 // UImGuiSettings
 //====================================================================================================
 
-UImGuiSettings* UImGuiSettings::DefaultInstance = nullptr;
-
 FSimpleMulticastDelegate UImGuiSettings::OnSettingsLoaded;
+
+UImGuiSettings::UImGuiSettings()
+{
+    CategoryName = TEXT("Plugins");
+    SectionName = TEXT("ImGui");
+}
 
 void UImGuiSettings::PostInitProperties()
 {
 	Super::PostInitProperties();
 
-	if (SwitchInputModeKey_DEPRECATED.Key.IsValid() && !ToggleInput.Key.IsValid())
-	{
-		const FString ConfigFileName = GetDefaultConfigFilename();
-
-		// Move value to the new property.
-		ToggleInput = MoveTemp(SwitchInputModeKey_DEPRECATED);
-
-		// Remove from configuration file entry for obsolete property.
-		if (FConfigFile* ConfigFile = GConfig->Find(ConfigFileName, false))
-		{
-			if (FConfigSection* Section = ConfigFile->Find(TEXT("/Script/ImGui.ImGuiSettings")))
-			{
-				if (Section->Remove(TEXT("SwitchInputModeKey")))
-				{
-					ConfigFile->Dirty = true;
-					GConfig->Flush(false, ConfigFileName);
-				}
-			}
-		}
-
-		// Add to configuration file entry for new property.
-		UpdateSinglePropertyInConfigFile(
-			UImGuiSettings::StaticClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UImGuiSettings, ToggleInput)),
-			ConfigFileName);
-	}
+#if WITH_EDITOR
+    if (IsTemplate())
+    {
+        ImportConsoleVariableValues();
+    }
+#endif // #if WITH_EDITOR
 
 	if (IsTemplate())
 	{
-		DefaultInstance = this;
 		OnSettingsLoaded.Broadcast();
 	}
 }
 
-void UImGuiSettings::BeginDestroy()
+#if WITH_EDITOR
+void UImGuiSettings::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
-	Super::BeginDestroy();
+    Super::PostEditChangeProperty(PropertyChangedEvent);
 
-	if (DefaultInstance == this)
-	{
-		DefaultInstance = nullptr;
-	}
+    if (PropertyChangedEvent.Property)
+    {
+        ExportValuesToConsoleVariables(PropertyChangedEvent.Property);
+    }
 }
+#endif // #if WITH_EDITOR
 
 //====================================================================================================
 // FImGuiModuleSettings
@@ -74,9 +60,6 @@ FImGuiModuleSettings::FImGuiModuleSettings(FImGuiModuleProperties& InProperties,
 #if WITH_EDITOR
 	FCoreUObjectDelegates::OnObjectPropertyChanged.AddRaw(this, &FImGuiModuleSettings::OnPropertyChanged);
 #endif
-
-	// Delegate initializer to support settings loaded after this object creation (in stand-alone builds) and potential
-	// reloading of settings.
 	UImGuiSettings::OnSettingsLoaded.AddRaw(this, &FImGuiModuleSettings::UpdateSettings);
 
 	// Call initializer to support settings already loaded (editor).
@@ -95,7 +78,7 @@ FImGuiModuleSettings::~FImGuiModuleSettings()
 
 void FImGuiModuleSettings::UpdateSettings()
 {
-	if (UImGuiSettings* SettingsObject = UImGuiSettings::Get())
+	if (UImGuiSettings const* SettingsObject = GetDefault<UImGuiSettings>())
 	{
 		SetImGuiInputHandlerClass(SettingsObject->ImGuiInputHandlerClass);
 		SetShareKeyboardInput(SettingsObject->bShareKeyboardInput);
@@ -164,7 +147,7 @@ void FImGuiModuleSettings::SetToggleInputKey(const FImGuiKeyInfo& KeyInfo)
 
 void FImGuiModuleSettings::OnPropertyChanged(class UObject* ObjectBeingModified, struct FPropertyChangedEvent& PropertyChangedEvent)
 {
-	if (ObjectBeingModified == UImGuiSettings::Get())
+	if (ObjectBeingModified == GetDefault<UImGuiSettings>())
 	{
 		UpdateSettings();
 	}

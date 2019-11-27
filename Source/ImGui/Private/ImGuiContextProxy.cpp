@@ -175,6 +175,15 @@ void FImGuiContextProxy::EndFrame()
 		// next frame.
 		UpdateDrawData(ImGui::GetDrawData());
 
+#ifdef IMGUI_HAS_DOCK 
+        // Update and Render additional Platform Windows
+        if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault();
+        }
+#endif
+
 		bIsFrameStarted = false;
 	}
 }

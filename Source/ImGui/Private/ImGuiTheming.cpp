@@ -346,7 +346,11 @@ void FImGuiThemeStyle::OnAttach()
 {
 	ImGuiIO& io = ImGui::GetIO();
 	//io.DisplaySize = ImVec2(static_cast<float>(app->GetWindow()->GetWidth()), static_cast<float>(app->GetWindow()->GetHeight()));
-    //io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+#ifdef IMGUI_HAS_DOCK
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+    io.ConfigDockingWithShift = true;
+#endif
     io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
 	io.ConfigWindowsMoveFromTitleBarOnly = true;
 

@@ -33,7 +33,8 @@ public class ImGui : ModuleRules
 
         PublicIncludePaths.AddRange(
 			new string[] {
-				Path.Combine(ModuleDirectory, "../ThirdParty/ImGuiLibrary/Include"),
+                Path.Combine(ModuleDirectory, "Public"),
+                Path.Combine(ModuleDirectory, "../ThirdParty/ImGuiLibrary/Include"),
 				Path.Combine(ModuleDirectory, "../ThirdParty/ImGuiLibrary/Include/misc/cpp"),
                 Path.Combine(ModuleDirectory, "../ThirdParty/ImGuiLibrary/Include/misc/fonts"),
                 Path.Combine(ModuleDirectory, "../ThirdParty/ImGuiLibrary/Include/misc/freetype"),

@@ -173,7 +173,7 @@ private:
 
 	void OnPostImGuiUpdate();
 
-	void Initialize(FImGuiModuleManager* InModuleManager, UGameViewportClient* InGameViewport, int32 InContextIndex);
+	void Initialize(FImGuiModuleManager* InModuleManager, int32 InContextIndex);
 
 	virtual void BeginDestroy() override;
 
@@ -184,8 +184,6 @@ private:
 	bool bGamepadInputEnabled = false;
 
 	FImGuiModuleManager* ModuleManager = nullptr;
-
-	TWeakObjectPtr<UGameViewportClient> GameViewport;
 
 	int32 ContextIndex = -1;
 

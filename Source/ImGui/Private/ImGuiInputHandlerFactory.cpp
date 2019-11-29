@@ -7,7 +7,7 @@
 #include "ImGuiInputHandler.h"
 
 
-UImGuiInputHandler* FImGuiInputHandlerFactory::NewHandler(const FStringClassReference& HandlerClassReference, FImGuiModuleManager* ModuleManager, UGameViewportClient* GameViewport, int32 ContextIndex)
+UImGuiInputHandler* FImGuiInputHandlerFactory::NewHandler(const FStringClassReference& HandlerClassReference, FImGuiModuleManager* ModuleManager, int32 ContextIndex)
 {
 	UClass* HandlerClass = nullptr;
 	if (HandlerClassReference.IsValid())
@@ -25,10 +25,10 @@ UImGuiInputHandler* FImGuiInputHandlerFactory::NewHandler(const FStringClassRefe
 		HandlerClass = UImGuiInputHandler::StaticClass();
 	}
 
-	UImGuiInputHandler* Handler = NewObject<UImGuiInputHandler>(GameViewport, HandlerClass);
+	UImGuiInputHandler* Handler = NewObject<UImGuiInputHandler>(GetTransientPackage(), HandlerClass);
 	if (Handler)
 	{
-		Handler->Initialize(ModuleManager, GameViewport, ContextIndex);
+		Handler->Initialize(ModuleManager, ContextIndex);
 		Handler->AddToRoot();
 	}
 	else

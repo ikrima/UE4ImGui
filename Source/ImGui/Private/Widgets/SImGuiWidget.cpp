@@ -256,7 +256,7 @@ void SImGuiWidget::CreateInputHandler(const FStringClassReference& HandlerClassR
 
 	if (!InputHandler.IsValid())
 	{
-		InputHandler = FImGuiInputHandlerFactory::NewHandler(HandlerClassReference, ModuleManager, GameViewport.Get(), ContextIndex);
+		InputHandler = FImGuiInputHandlerFactory::NewHandler(HandlerClassReference, ModuleManager, ContextIndex);
 	}
 }
 

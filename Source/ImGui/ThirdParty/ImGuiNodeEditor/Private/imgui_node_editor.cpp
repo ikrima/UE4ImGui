@@ -2009,7 +2009,7 @@ ed::Control ed::EditorContext::BuildControl(bool allowOffscreen)
     auto emitInteractiveArea = [](ObjectId id, const ImRect& rect)
     {
         char idString[33] = { 0 }; // itoa can output 33 bytes maximum
-        _snprintf_s(idString, 32, "%p", id.AsPointer());
+        snprintf(idString, 32, "%p", id.AsPointer());
         ImGui::SetCursorScreenPos(rect.Min);
 
         // debug
@@ -2422,7 +2422,7 @@ bool ed::Settings::Parse(const std::string& string, Settings& settings)
     {
         auto separator = str.find_first_of(':');
         auto idStart   = str.c_str() + ((separator != std::string::npos) ? separator + 1 : 0);
-        auto id        = reinterpret_cast<void*>(strtoull(idStart, nullptr, 16));
+        auto id        = reinterpret_cast<void*>(strtoull(idStart, nullptr, 10));
         if (str.compare(0, separator, "node") == 0)
             return ObjectId(NodeId(id));
         else if (str.compare(0, separator, "link") == 0)

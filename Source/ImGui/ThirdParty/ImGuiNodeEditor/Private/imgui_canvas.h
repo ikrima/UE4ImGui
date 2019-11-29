@@ -46,7 +46,6 @@
 # define __IMGUI_EX_CANVAS_H__
 # pragma once
 
-
 # include <imgui.h>
 # include <imgui_internal.h> // ImRect, ImFloor
 

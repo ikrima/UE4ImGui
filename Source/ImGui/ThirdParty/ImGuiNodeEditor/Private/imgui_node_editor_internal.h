@@ -11,6 +11,7 @@
 # define __IMGUI_NODE_EDITOR_INTERNAL_H__
 # pragma once
 
+
 //------------------------------------------------------------------------------
 # include "imgui_node_editor.h"
 
@@ -110,14 +111,14 @@ struct FringeScaleScope
 {
 
     FringeScaleScope(float scale)
-        : m_LastFringeScale(ax::NodeEditor::Detail::ImFringeScaleRef(ImGui::GetWindowDrawList()))
+        : m_LastFringeScale(ImFringeScaleRef(ImGui::GetWindowDrawList()))
     {
-        ax::NodeEditor::Detail::ImFringeScaleRef(ImGui::GetWindowDrawList()) = scale;
+        ImFringeScaleRef(ImGui::GetWindowDrawList()) = scale;
     }
 
     ~FringeScaleScope()
     {
-        ax::NodeEditor::Detail::ImFringeScaleRef(ImGui::GetWindowDrawList()) = m_LastFringeScale;
+        ImFringeScaleRef(ImGui::GetWindowDrawList()) = m_LastFringeScale;
     }
 
 private:

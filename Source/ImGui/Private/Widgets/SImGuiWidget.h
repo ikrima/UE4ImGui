@@ -7,9 +7,17 @@
 
 #include <Widgets/SCompoundWidget.h>
 
-
 // Hide ImGui Widget debug in non-developer mode.
 #define IMGUI_WIDGET_DEBUG IMGUI_MODULE_DEVELOPER
+
+
+#if IMGUI_WIDGET_DEBUG
+namespace CVars
+{
+    extern TAutoConsoleVariable<int> DebugWidget;
+    extern TAutoConsoleVariable<int> DebugInput;
+}
+#endif // IMGUI_WIDGET_DEBUG
 
 class FImGuiModuleManager;
 class SImGuiCanvasControl;

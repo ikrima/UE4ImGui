@@ -59,6 +59,7 @@ private:
 	void OnViewportCreated();
 
 	void AddWidgetToViewport(UGameViewportClient* GameViewport);
+    void AddNewWindowWidget(UWorld& InWorld);
 	void AddWidgetsToActiveViewports();
 
 	void OnContextProxyCreated(int32 ContextIndex, FImGuiContextProxy& ContextProxy);

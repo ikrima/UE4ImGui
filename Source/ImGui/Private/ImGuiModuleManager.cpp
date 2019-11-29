@@ -10,7 +10,13 @@
 #include <Modules/ModuleManager.h>
 
 #include <imgui.h>
+#include "Widgets/Docking/SDockTab.h"
+#include "Framework/Docking/TabManager.h"
 
+#if WITH_EDITORONLY_DATA
+#include "LevelEditor.h"
+#endif
+#include "Widgets/SImGuiBaseWidget.h"
 
 // High enough z-order guarantees that ImGui output is rendered on top of the game UI.
 constexpr int32 IMGUI_WIDGET_Z_ORDER = 10000;
@@ -164,7 +170,8 @@ void FImGuiModuleManager::OnViewportCreated()
 	checkf(FSlateApplication::IsInitialized(), TEXT("We expect Slate to be initialized when game viewport is created."));
 
 	// Create widget to viewport responsible for this event.
-	AddWidgetToViewport(GEngine->GameViewport);
+	//AddWidgetToViewport(GEngine->GameViewport);
+    AddNewWindowWidget(*GEngine->GameViewport->GetWorld());
 }
 
 void FImGuiModuleManager::AddWidgetToViewport(UGameViewportClient* GameViewport)
@@ -195,6 +202,46 @@ void FImGuiModuleManager::AddWidgetToViewport(UGameViewportClient* GameViewport)
 	{
 		Widgets.Emplace(SharedWidget);
 	}
+}
+
+
+void FImGuiModuleManager::AddNewWindowWidget(UWorld& InWorld) 
+{
+    checkf(FSlateApplication::IsInitialized(), TEXT("Slate should be initialized before we can add widget to game viewports."));
+
+    // Make sure that we have a context for this viewport's world and get its index.
+    int32 ContextIndex;
+    auto& ContextProxy = ContextManager.GetWorldContextProxy(InWorld, ContextIndex);
+
+    // Make sure that textures are loaded before the first Slate widget is created.
+    LoadTextures();
+
+
+    FTabManager* const tabManager = [] {
+#if WITH_EDITOR
+        if (FLevelEditorModule* levelEditorModule = FModuleManager::GetModulePtr<FLevelEditorModule>("LevelEditor"))
+        {
+            return levelEditorModule->GetLevelEditorTabManager().Get();
+        }
+#endif
+        return (FTabManager*)(&FGlobalTabmanager::Get().Get());
+    }();
+
+    tabManager->InsertNewDocumentTab(
+        TEXT("IMGUIWidget"),
+        FTabManager::ESearchPreference::PreferLiveTab,
+        SNew(SDockTab)
+            .Label(NSLOCTEXT("IMGUIWidget", "IMGUIWidget", "IMGUIWidget"))
+            .TabRole(ETabRole::DocumentTab)
+            .ShouldAutosize(true)
+            [
+                SNew(SImGuiBaseWidget)
+				.ModuleManager(this)
+				.ContextIndex(ContextIndex)
+				// To correctly clip borders. Using SScissorRectBox in older versions seems to be not necessary.
+				.Clipping(EWidgetClipping::ClipToBounds)
+            ]
+    );
 }
 
 void FImGuiModuleManager::AddWidgetsToActiveViewports()

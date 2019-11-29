@@ -46,10 +46,8 @@ BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 void SImGuiBaseWidget::Construct(const FArguments& InArgs)
 {
 	checkf(InArgs._ModuleManager, TEXT("Null Module Manager argument"));
-	checkf(InArgs._GameViewport, TEXT("Null Game Viewport argument"));
 
 	ModuleManager = InArgs._ModuleManager;
-	GameViewport = InArgs._GameViewport;
 	ContextIndex = InArgs._ContextIndex;
 
 	// Register to get post-update notifications.
@@ -107,8 +105,6 @@ void SImGuiBaseWidget::Tick(const FGeometry& AllottedGeometry, const double InCu
 {
 	Super::Tick(AllottedGeometry, InCurrentTime, InDeltaTime);
 
-	UpdateInputState();
-	UpdateTransparentMouseInput(AllottedGeometry);
 	
     //HandleWindowFocusLost();
     // We can use window foreground status to notify about application losing or receiving focus. In some situations
@@ -306,7 +302,7 @@ void SImGuiBaseWidget::UpdateVisibility()
 {
 	// Make sure that we do not occlude other widgets, if input is disabled or if mouse is set to work in a transparent
 	// mode (hit-test invisible).
-	SetVisibility(bInputEnabled && !bTransparentMouseInput ? EVisibility::Visible : EVisibility::HitTestInvisible);
+	SetVisibility(bInputEnabled ? EVisibility::Visible : EVisibility::HitTestInvisible);
 
 	IMGUI_WIDGET_LOG(VeryVerbose, TEXT("ImGui Widget %d - Visibility updated to '%s'."),
 		ContextIndex, *GetVisibility().ToString());
@@ -322,147 +318,6 @@ void SImGuiBaseWidget::UpdateMouseCursor()
 	else
 	{
 		SetCursor(EMouseCursor::None);
-	}
-}
-
-ULocalPlayer* SImGuiBaseWidget::GetLocalPlayer() const
-{
-	if (GameViewport.IsValid())
-	{
-		if (UWorld* World = GameViewport->GetWorld())
-		{
-			if (ULocalPlayer* LocalPlayer = World->GetFirstLocalPlayerFromController())
-			{
-				return World->GetFirstLocalPlayerFromController();
-			}
-		}
-	}
-
-	return nullptr;
-}
-
-
-
-void SImGuiBaseWidget::UpdateInputState()
-{
-	auto& Properties = ModuleManager->GetProperties();
-	auto* ContextPropxy = ModuleManager->GetContextManager().GetContextProxy(ContextIndex);
-
-	const bool bEnableTransparentMouseInput = Properties.IsMouseInputShared()
-#if PLATFORM_ANDROID || PLATFORM_IOS
-		&& (FSlateApplication::Get().GetCursorPos() != FVector2D::ZeroVector)
-#endif
-		&& !(ContextPropxy->IsMouseHoveringAnyWindow() || ContextPropxy->HasActiveItem());
-	if (bTransparentMouseInput != bEnableTransparentMouseInput)
-	{
-		bTransparentMouseInput = bEnableTransparentMouseInput;
-		if (bInputEnabled)
-		{
-			UpdateVisibility();
-		}
-	}
-
-    auto TakeFocus = [this] {
-        auto& SlateApplication = FSlateApplication::Get();
-
-        PreviousUserFocusedWidget = SlateApplication.GetUserFocusedWidget(SlateApplication.GetUserIndexForKeyboard());
-
-        if (ULocalPlayer* LocalPlayer = GetLocalPlayer())
-        {
-            TSharedRef<SWidget> FocusWidget = SharedThis(this);
-            LocalPlayer->GetSlateOperations().CaptureMouse(FocusWidget);
-            LocalPlayer->GetSlateOperations().SetUserFocus(FocusWidget);
-        }
-        else
-        {
-            SlateApplication.SetKeyboardFocus(SharedThis(this));
-        }
-    };
-
-    auto ReturnFocus = [this] {
-        if (HasKeyboardFocus())
-        {
-            auto FocusWidgetPtr = PreviousUserFocusedWidget.IsValid()
-                ? PreviousUserFocusedWidget.Pin()
-                : GameViewport->GetGameViewportWidget();
-
-            if (ULocalPlayer* LocalPlayer = GetLocalPlayer())
-            {
-                auto FocusWidgetRef = FocusWidgetPtr.ToSharedRef();
-                LocalPlayer->GetSlateOperations().CaptureMouse(FocusWidgetRef);
-                LocalPlayer->GetSlateOperations().SetUserFocus(FocusWidgetRef);
-            }
-            else
-            {
-                auto& SlateApplication = FSlateApplication::Get();
-                SlateApplication.ResetToDefaultPointerInputSettings();
-                SlateApplication.SetUserFocus(SlateApplication.GetUserIndexForKeyboard(), FocusWidgetPtr);
-            }
-        }
-
-        PreviousUserFocusedWidget.Reset();
-    };
-
-	//const bool bEnableInput = Properties.IsInputEnabled();
-	//if (bInputEnabled != bEnableInput)
-	//{
-	//	IMGUI_WIDGET_LOG(Log, TEXT("ImGui Widget %d - Input Enabled changed to '%s'."),
-	//		ContextIndex, TEXT_BOOL(bEnableInput));
-
-	//	bInputEnabled = bEnableInput;
-
-	//	UpdateVisibility();
-	//	UpdateMouseCursor();
-
-	//	if (bInputEnabled)
-	//	{
-	//		// We won't get mouse enter, if viewport is already hovered.
-	//		if (GameViewport->GetGameViewportWidget()->IsHovered())
-	//		{
-	//			InputHandler->OnMouseInputEnabled();
-	//		}
-
-	//		TakeFocus();
-	//	}
-	//	else
-	//	{
-	//		ReturnFocus();
-	//	}
-	//}
-	//else if(bInputEnabled)
-	{
-		const auto& ViewportWidget = GameViewport->GetGameViewportWidget();
-
-		if (bTransparentMouseInput)
-		{
-			// If mouse is in transparent input mode and focus is lost to viewport, let viewport keep it and disable
-			// the whole input to match that state.
-			if (GameViewport->GetGameViewportWidget()->HasMouseCapture())
-			{
-				Properties.SetInputEnabled(false);
-				UpdateInputState();
-			}
-		}
-		else
-		{
-			// Widget tends to lose keyboard focus after console is opened. With non-transparent mouse we can fix that
-			// by manually restoring it.
-			if (!HasKeyboardFocus() && (ViewportWidget->HasKeyboardFocus() || ViewportWidget->HasFocusedDescendants()))
-			{
-				TakeFocus();
-			}
-		}
-	}
-}
-
-void SImGuiBaseWidget::UpdateTransparentMouseInput(const FGeometry& AllottedGeometry)
-{
-	if (bInputEnabled && bTransparentMouseInput)
-	{
-		if (!GameViewport->GetGameViewportWidget()->HasMouseCapture())
-		{
-			InputHandler->OnMouseMove(TransformScreenPointToImGui(AllottedGeometry, FSlateApplication::Get().GetCursorPos()));
-		}
 	}
 }
 
@@ -713,7 +568,6 @@ void SImGuiBaseWidget::OnDebugDraw()
 			{
 				TwoColumns::Value("Context Index", ContextIndex);
 				TwoColumns::Value("Context Name", ContextProxy ? *ContextProxy->GetName() : TEXT("< Null >"));
-				TwoColumns::Value("Game Viewport", *GameViewport->GetName());
 			});
 
 			TwoColumns::CollapsingGroup("Input Mode", [&]()
@@ -729,15 +583,15 @@ void SImGuiBaseWidget::OnDebugDraw()
 				TwoColumns::Value("Has Keyboard Input", HasKeyboardFocus());
 			});
 
-			TwoColumns::CollapsingGroup("Viewport", [&]()
+			TwoColumns::CollapsingGroup("Window", [&]()
 			{
-				const auto& ViewportWidget = GameViewport->GetGameViewportWidget();
-				TwoColumns::Value("Is Foreground Window", GameViewport->Viewport->IsForegroundWindow());
-				TwoColumns::Value("Is Hovered", ViewportWidget->IsHovered());
-				TwoColumns::Value("Is Directly Hovered", ViewportWidget->IsDirectlyHovered());
-				TwoColumns::Value("Has Mouse Capture", ViewportWidget->HasMouseCapture());
-				TwoColumns::Value("Has Keyboard Input", ViewportWidget->HasKeyboardFocus());
-				TwoColumns::Value("Has Focused Descendants", ViewportWidget->HasFocusedDescendants());
+                const TSharedPtr<SWindow>& ParentWindow = FSlateApplication::Get().FindWidgetWindow(AsShared());
+				TwoColumns::Value("Is Foreground Window", ParentWindow->GetNativeWindow()->IsForegroundWindow());
+				TwoColumns::Value("Is Hovered", ParentWindow->IsHovered());
+				TwoColumns::Value("Is Directly Hovered", ParentWindow->IsDirectlyHovered());
+				TwoColumns::Value("Has Mouse Capture", ParentWindow->HasMouseCapture());
+				TwoColumns::Value("Has Keyboard Input", ParentWindow->HasKeyboardFocus());
+				TwoColumns::Value("Has Focused Descendants", ParentWindow->HasFocusedDescendants());
 				auto Widget = PreviousUserFocusedWidget.Pin();
 				TwoColumns::Value("Previous User Focused", Widget.IsValid() ? *Widget->GetTypeAsString() : TEXT("None"));
 			});

@@ -25,7 +25,6 @@ public:
 	SLATE_BEGIN_ARGS(SImGuiBaseWidget)
 	{}
 	SLATE_ARGUMENT(FImGuiModuleManager*, ModuleManager)
-	SLATE_ARGUMENT(UGameViewportClient*, GameViewport)
 	SLATE_ARGUMENT(int32, ContextIndex)
 	SLATE_END_ARGS()
 
@@ -92,11 +91,7 @@ private:
 	// Update cursor based on input state.
 	void UpdateMouseCursor();
 
-	ULocalPlayer* GetLocalPlayer() const;
 
-	// Update input state.
-	void UpdateInputState();
-	void UpdateTransparentMouseInput(const FGeometry& AllottedGeometry);
 
 	void UpdateCanvasControlMode(const FInputEvent& InputEvent);
 
@@ -115,7 +110,6 @@ private:
 #endif // IMGUI_WIDGET_DEBUG
 
 	FImGuiModuleManager* ModuleManager = nullptr;
-	TWeakObjectPtr<UGameViewportClient> GameViewport;
 	TWeakObjectPtr<UImGuiInputHandler> InputHandler;
 
 	FSlateRenderTransform ImGuiTransform;
@@ -128,7 +122,6 @@ private:
 
 	bool bInputEnabled = true;
 	bool bHideMouseCursor = true;
-	bool bTransparentMouseInput = false;
 
 	TSharedPtr<SImGuiCanvasControl> CanvasControlWidget;
 	TWeakPtr<SWidget> PreviousUserFocusedWidget;

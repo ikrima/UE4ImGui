@@ -356,7 +356,7 @@ int32 SImGuiBaseWidget::OnPaint(const FPaintArgs& Args, const FGeometry& Allotte
 	{
 		// Manually update ImGui context to minimise lag between creating and rendering ImGui output. This will also
 		// keep frame tearing at minimum because it is executed at the very end of the frame.
-		ContextProxy->Tick(FSlateApplication::Get().GetDeltaTime());
+		ContextProxy->Tick(FSlateApplication::Get().GetDeltaTime(), GetDesiredSize());
 
 		// Calculate transform from ImGui to screen space. Rounding translation is necessary to keep it pixel-perfect
 		// in older engine versions.
@@ -413,11 +413,6 @@ int32 SImGuiBaseWidget::OnPaint(const FPaintArgs& Args, const FGeometry& Allotte
 	}
 
 	return Super::OnPaint(Args, AllottedGeometry, MyClippingRect, OutDrawElements, LayerId, WidgetStyle, bParentEnabled);
-}
-
-FVector2D SImGuiBaseWidget::ComputeDesiredSize(float Scale) const
-{
-	return FVector2D{ 3840.f, 2160.f } * Scale;
 }
 
 #if IMGUI_WIDGET_DEBUG

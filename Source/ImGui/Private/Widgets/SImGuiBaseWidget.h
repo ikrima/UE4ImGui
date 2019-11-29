@@ -101,8 +101,6 @@ private:
 
 	virtual int32 OnPaint(const FPaintArgs& Args, const FGeometry& AllottedGeometry, const FSlateRect& MyClippingRect, FSlateWindowElementList& OutDrawElements, int32 LayerId, const FWidgetStyle& WidgetStyle, bool bParentEnabled) const override;
 
-	virtual FVector2D ComputeDesiredSize(float) const override;
-
 	void SetImGuiTransform(const FSlateRenderTransform& Transform) { ImGuiTransform = Transform; }
 
 #if IMGUI_WIDGET_DEBUG

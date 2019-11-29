@@ -109,21 +109,21 @@ void SImGuiBaseWidget::Tick(const FGeometry& AllottedGeometry, const double InCu
     //HandleWindowFocusLost();
     // We can use window foreground status to notify about application losing or receiving focus. In some situations
     // we get mouse leave or enter events, but they are only sent if mouse pointer is inside of the viewport.
-    if (bInputEnabled && HasKeyboardFocus())
-    {
-        TSharedPtr<SWindow> ParentWindow = FSlateApplication::Get().FindWidgetWindow(AsShared());
-        //if (bForegroundWindow != ParentWindow->IsActive())
-        if (ParentWindow->GetNativeWindow()->IsForegroundWindow())
-        {
-            InputHandler->OnKeyboardInputEnabled();
-            InputHandler->OnGamepadInputEnabled();
-        }
-        else
-        {
-            InputHandler->OnKeyboardInputDisabled();
-            InputHandler->OnGamepadInputDisabled();
-        }
-    }
+    //if (bInputEnabled && HasKeyboardFocus())
+    //{
+    //    TSharedPtr<SWindow> ParentWindow = FSlateApplication::Get().FindWidgetWindow(AsShared());
+    //    //if (bForegroundWindow != ParentWindow->IsActive())
+    //    if (ParentWindow->GetNativeWindow()->IsForegroundWindow())
+    //    {
+    //        InputHandler->OnKeyboardInputEnabled();
+    //        InputHandler->OnGamepadInputEnabled();
+    //    }
+    //    else
+    //    {
+    //        InputHandler->OnKeyboardInputDisabled();
+    //        InputHandler->OnGamepadInputDisabled();
+    //    }
+    //}
 }
 
 FReply SImGuiBaseWidget::OnKeyChar(const FGeometry& MyGeometry, const FCharacterEvent& CharacterEvent)

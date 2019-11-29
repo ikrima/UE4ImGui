@@ -204,7 +204,11 @@ FReply SImGuiCanvasControl::SImGuiCanvasControl::OnDrop(const FGeometry& MyGeome
 
 FVector2D SImGuiCanvasControl::ComputeDesiredSize(float InScale) const
 {
-	return FVector2D{ 3840.f, 2160.f } * InScale;
+    if (!ParentWindow.IsValid())
+    {
+        ParentWindow = FSlateApplication::Get().FindWidgetWindow(AsShared());
+    }
+    return ParentWindow.Pin()->GetClientSizeInScreen();
 }
 
 namespace
@@ -235,7 +239,7 @@ int32 SImGuiCanvasControl::OnPaint(const FPaintArgs& Args, const FGeometry& Allo
 
 	const FSlateRect CanvasRect = FSlateRect(
 		ImGuiToScreen.TransformPoint(FVector2D::ZeroVector),
-		ImGuiToScreen.TransformPoint(ComputeDesiredSize(1.f)));
+		ImGuiToScreen.TransformPoint(GetDesiredSize()));
 	const FMargin CanvasMargin = CalculateInset(MyCullingRect, CanvasRect);
 
 	if (CanvasMargin.GetDesiredSize().SizeSquared() > 0.f)
@@ -341,7 +345,7 @@ float SImGuiCanvasControl::GetMinScale(const FGeometry& MyGeometry)
 #define GET_BOUNDING_RECT GetClippingRect
 #endif
 
-	const FVector2D DefaultCanvasSize = MyGeometry.GetAccumulatedRenderTransform().TransformVector(ComputeDesiredSize(1.f));
+	const FVector2D DefaultCanvasSize = MyGeometry.GetAccumulatedRenderTransform().TransformVector(GetDesiredSize());
 	const FVector2D WidgetSize = MyGeometry.GET_BOUNDING_RECT().GetSize();
 	return FMath::Min(WidgetSize.X / DefaultCanvasSize.X, WidgetSize.Y / DefaultCanvasSize.Y);
 

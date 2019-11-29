@@ -104,4 +104,6 @@ private:
 	// is released or until drag operation is finished or until it is replaced by alternative request.
 	// Highlights are bound to requests, what means that they can also be activated before drag operation is started.
 	EDragRequest DragRequest = EDragRequest::None;
+
+    mutable TWeakPtr<SWindow> ParentWindow;
 };

@@ -42,7 +42,7 @@ public:
 
 	virtual void Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime) override;
 
-	virtual bool SupportsKeyboardFocus() const override { return bInputEnabled && !IsConsoleOpened(); }
+	virtual bool SupportsKeyboardFocus() const override { return bInputEnabled; }
 
 	virtual FReply OnKeyChar(const FGeometry& MyGeometry, const FCharacterEvent& CharacterEvent) override;
 
@@ -86,8 +86,6 @@ private:
 
 	void SetHideMouseCursor(bool bHide);
 
-	bool IsConsoleOpened() const;
-
 	// Update visibility based on input state.
 	void UpdateVisibility();
 
@@ -95,13 +93,10 @@ private:
 	void UpdateMouseCursor();
 
 	ULocalPlayer* GetLocalPlayer() const;
-	void TakeFocus();
-	void ReturnFocus();
 
 	// Update input state.
 	void UpdateInputState();
 	void UpdateTransparentMouseInput(const FGeometry& AllottedGeometry);
-	void HandleWindowFocusLost();
 
 	void UpdateCanvasControlMode(const FInputEvent& InputEvent);
 
@@ -131,8 +126,7 @@ private:
 
 	int32 ContextIndex = 0;
 
-	bool bInputEnabled = false;
-	bool bForegroundWindow = false;
+	bool bInputEnabled = true;
 	bool bHideMouseCursor = true;
 	bool bTransparentMouseInput = false;
 

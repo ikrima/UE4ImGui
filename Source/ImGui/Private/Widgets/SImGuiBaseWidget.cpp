@@ -109,7 +109,25 @@ void SImGuiBaseWidget::Tick(const FGeometry& AllottedGeometry, const double InCu
 
 	UpdateInputState();
 	UpdateTransparentMouseInput(AllottedGeometry);
-	HandleWindowFocusLost();
+	
+    //HandleWindowFocusLost();
+    // We can use window foreground status to notify about application losing or receiving focus. In some situations
+    // we get mouse leave or enter events, but they are only sent if mouse pointer is inside of the viewport.
+    if (bInputEnabled && HasKeyboardFocus())
+    {
+        TSharedPtr<SWindow> ParentWindow = FSlateApplication::Get().FindWidgetWindow(AsShared());
+        //if (bForegroundWindow != ParentWindow->IsActive())
+        if (ParentWindow->GetNativeWindow()->IsForegroundWindow())
+        {
+            InputHandler->OnKeyboardInputEnabled();
+            InputHandler->OnGamepadInputEnabled();
+        }
+        else
+        {
+            InputHandler->OnKeyboardInputDisabled();
+            InputHandler->OnGamepadInputDisabled();
+        }
+    }
 }
 
 FReply SImGuiBaseWidget::OnKeyChar(const FGeometry& MyGeometry, const FCharacterEvent& CharacterEvent)
@@ -183,7 +201,6 @@ FReply SImGuiBaseWidget::OnFocusReceived(const FGeometry& MyGeometry, const FFoc
 
 	IMGUI_WIDGET_LOG(VeryVerbose, TEXT("ImGui Widget %d - Focus Received."), ContextIndex);
 
-	bForegroundWindow = GameViewport->Viewport->IsForegroundWindow();
 	InputHandler->OnKeyboardInputEnabled();
 	InputHandler->OnGamepadInputEnabled();
 
@@ -241,7 +258,7 @@ void SImGuiBaseWidget::CreateInputHandler(const FStringClassReference& HandlerCl
 
 	if (!InputHandler.IsValid())
 	{
-		InputHandler = FImGuiInputHandlerFactory::NewHandler(HandlerClassReference, ModuleManager, GameViewport.Get(), ContextIndex);
+		InputHandler = FImGuiInputHandlerFactory::NewHandler(HandlerClassReference, ModuleManager, ContextIndex);
 	}
 }
 
@@ -285,11 +302,6 @@ void SImGuiBaseWidget::SetHideMouseCursor(bool bHide)
 	}
 }
 
-bool SImGuiBaseWidget::IsConsoleOpened() const
-{
-	return GameViewport->ViewportConsole && GameViewport->ViewportConsole->ConsoleState != NAME_None;
-}
-
 void SImGuiBaseWidget::UpdateVisibility()
 {
 	// Make sure that we do not occlude other widgets, if input is disabled or if mouse is set to work in a transparent
@@ -329,48 +341,7 @@ ULocalPlayer* SImGuiBaseWidget::GetLocalPlayer() const
 	return nullptr;
 }
 
-void SImGuiBaseWidget::TakeFocus()
-{
-	auto& SlateApplication = FSlateApplication::Get();
 
-	PreviousUserFocusedWidget = SlateApplication.GetUserFocusedWidget(SlateApplication.GetUserIndexForKeyboard());
-
-	if (ULocalPlayer* LocalPlayer = GetLocalPlayer())
-	{
-		TSharedRef<SWidget> FocusWidget = SharedThis(this);
-		LocalPlayer->GetSlateOperations().CaptureMouse(FocusWidget);
-		LocalPlayer->GetSlateOperations().SetUserFocus(FocusWidget);
-	}
-	else
-	{
-		SlateApplication.SetKeyboardFocus(SharedThis(this));
-	}
-}
-
-void SImGuiBaseWidget::ReturnFocus()
-{
-	if (HasKeyboardFocus())
-	{
-		auto FocusWidgetPtr = PreviousUserFocusedWidget.IsValid()
-			? PreviousUserFocusedWidget.Pin()
-			: GameViewport->GetGameViewportWidget();
-
-		if (ULocalPlayer* LocalPlayer = GetLocalPlayer())
-		{
-			auto FocusWidgetRef = FocusWidgetPtr.ToSharedRef();
-			LocalPlayer->GetSlateOperations().CaptureMouse(FocusWidgetRef);
-			LocalPlayer->GetSlateOperations().SetUserFocus(FocusWidgetRef);
-		}
-		else
-		{
-			auto& SlateApplication = FSlateApplication::Get();
-			SlateApplication.ResetToDefaultPointerInputSettings();
-			SlateApplication.SetUserFocus(SlateApplication.GetUserIndexForKeyboard(), FocusWidgetPtr);
-		}
-	}
-
-	PreviousUserFocusedWidget.Reset();
-}
 
 void SImGuiBaseWidget::UpdateInputState()
 {
@@ -391,33 +362,74 @@ void SImGuiBaseWidget::UpdateInputState()
 		}
 	}
 
-	const bool bEnableInput = Properties.IsInputEnabled();
-	if (bInputEnabled != bEnableInput)
-	{
-		IMGUI_WIDGET_LOG(Log, TEXT("ImGui Widget %d - Input Enabled changed to '%s'."),
-			ContextIndex, TEXT_BOOL(bEnableInput));
+    auto TakeFocus = [this] {
+        auto& SlateApplication = FSlateApplication::Get();
 
-		bInputEnabled = bEnableInput;
+        PreviousUserFocusedWidget = SlateApplication.GetUserFocusedWidget(SlateApplication.GetUserIndexForKeyboard());
 
-		UpdateVisibility();
-		UpdateMouseCursor();
+        if (ULocalPlayer* LocalPlayer = GetLocalPlayer())
+        {
+            TSharedRef<SWidget> FocusWidget = SharedThis(this);
+            LocalPlayer->GetSlateOperations().CaptureMouse(FocusWidget);
+            LocalPlayer->GetSlateOperations().SetUserFocus(FocusWidget);
+        }
+        else
+        {
+            SlateApplication.SetKeyboardFocus(SharedThis(this));
+        }
+    };
 
-		if (bInputEnabled)
-		{
-			// We won't get mouse enter, if viewport is already hovered.
-			if (GameViewport->GetGameViewportWidget()->IsHovered())
-			{
-				InputHandler->OnMouseInputEnabled();
-			}
+    auto ReturnFocus = [this] {
+        if (HasKeyboardFocus())
+        {
+            auto FocusWidgetPtr = PreviousUserFocusedWidget.IsValid()
+                ? PreviousUserFocusedWidget.Pin()
+                : GameViewport->GetGameViewportWidget();
 
-			TakeFocus();
-		}
-		else
-		{
-			ReturnFocus();
-		}
-	}
-	else if(bInputEnabled)
+            if (ULocalPlayer* LocalPlayer = GetLocalPlayer())
+            {
+                auto FocusWidgetRef = FocusWidgetPtr.ToSharedRef();
+                LocalPlayer->GetSlateOperations().CaptureMouse(FocusWidgetRef);
+                LocalPlayer->GetSlateOperations().SetUserFocus(FocusWidgetRef);
+            }
+            else
+            {
+                auto& SlateApplication = FSlateApplication::Get();
+                SlateApplication.ResetToDefaultPointerInputSettings();
+                SlateApplication.SetUserFocus(SlateApplication.GetUserIndexForKeyboard(), FocusWidgetPtr);
+            }
+        }
+
+        PreviousUserFocusedWidget.Reset();
+    };
+
+	//const bool bEnableInput = Properties.IsInputEnabled();
+	//if (bInputEnabled != bEnableInput)
+	//{
+	//	IMGUI_WIDGET_LOG(Log, TEXT("ImGui Widget %d - Input Enabled changed to '%s'."),
+	//		ContextIndex, TEXT_BOOL(bEnableInput));
+
+	//	bInputEnabled = bEnableInput;
+
+	//	UpdateVisibility();
+	//	UpdateMouseCursor();
+
+	//	if (bInputEnabled)
+	//	{
+	//		// We won't get mouse enter, if viewport is already hovered.
+	//		if (GameViewport->GetGameViewportWidget()->IsHovered())
+	//		{
+	//			InputHandler->OnMouseInputEnabled();
+	//		}
+
+	//		TakeFocus();
+	//	}
+	//	else
+	//	{
+	//		ReturnFocus();
+	//	}
+	//}
+	//else if(bInputEnabled)
 	{
 		const auto& ViewportWidget = GameViewport->GetGameViewportWidget();
 
@@ -435,7 +447,7 @@ void SImGuiBaseWidget::UpdateInputState()
 		{
 			// Widget tends to lose keyboard focus after console is opened. With non-transparent mouse we can fix that
 			// by manually restoring it.
-			if (!HasKeyboardFocus() && !IsConsoleOpened() && (ViewportWidget->HasKeyboardFocus() || ViewportWidget->HasFocusedDescendants()))
+			if (!HasKeyboardFocus() && (ViewportWidget->HasKeyboardFocus() || ViewportWidget->HasFocusedDescendants()))
 			{
 				TakeFocus();
 			}
@@ -454,32 +466,6 @@ void SImGuiBaseWidget::UpdateTransparentMouseInput(const FGeometry& AllottedGeom
 	}
 }
 
-void SImGuiBaseWidget::HandleWindowFocusLost()
-{
-	// We can use window foreground status to notify about application losing or receiving focus. In some situations
-	// we get mouse leave or enter events, but they are only sent if mouse pointer is inside of the viewport.
-	if (bInputEnabled && HasKeyboardFocus())
-	{
-		if (bForegroundWindow != GameViewport->Viewport->IsForegroundWindow())
-		{
-			bForegroundWindow = !bForegroundWindow;
-
-			IMGUI_WIDGET_LOG(VeryVerbose, TEXT("ImGui Widget %d - Updating input after %s foreground window status."),
-				ContextIndex, bForegroundWindow ? TEXT("getting") : TEXT("losing"));
-
-			if (bForegroundWindow)
-			{
-				InputHandler->OnKeyboardInputEnabled();
-				InputHandler->OnGamepadInputEnabled();
-			}
-			else
-			{
-				InputHandler->OnKeyboardInputDisabled();
-				InputHandler->OnGamepadInputDisabled();
-			}
-		}
-	}
-}
 
 void SImGuiBaseWidget::UpdateCanvasControlMode(const FInputEvent& InputEvent)
 {

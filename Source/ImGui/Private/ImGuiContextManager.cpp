@@ -63,19 +63,15 @@ FImGuiContextManager::FImGuiContextManager()
 	int Width, Height, Bpp;
 	FontAtlas.GetTexDataAsRGBA32(&Pixels, &Width, &Height, &Bpp);
 
-	FWorldDelegates::OnWorldTickStart.AddRaw(this, &FImGuiContextManager::OnWorldTickStart);
-#if ENGINE_COMPATIBILITY_WITH_WORLD_POST_ACTOR_TICK
-	FWorldDelegates::OnWorldPostActorTick.AddRaw(this, &FImGuiContextManager::OnWorldPostActorTick);
-#endif
+	//FWorldDelegates::OnWorldTickStart.AddRaw(this, &FImGuiContextManager::OnWorldTickStart);
+	//FWorldDelegates::OnWorldPostActorTick.AddRaw(this, &FImGuiContextManager::OnWorldPostActorTick);
 }
 
 FImGuiContextManager::~FImGuiContextManager()
 {
 	// Order matters because contexts can be created during World Tick Start events.
-	FWorldDelegates::OnWorldTickStart.RemoveAll(this);
-#if ENGINE_COMPATIBILITY_WITH_WORLD_POST_ACTOR_TICK
-	FWorldDelegates::OnWorldPostActorTick.RemoveAll(this);
-#endif
+	//FWorldDelegates::OnWorldTickStart.RemoveAll(this);
+	//FWorldDelegates::OnWorldPostActorTick.RemoveAll(this);
 }
 
 void FImGuiContextManager::Tick(float DeltaSeconds)

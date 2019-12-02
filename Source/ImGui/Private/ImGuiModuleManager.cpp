@@ -104,11 +104,11 @@ void FImGuiModuleManager::LoadTextures()
 
 void FImGuiModuleManager::RegisterTick()
 {
-	// Slate Post-Tick is a good moment to end and advance ImGui frame as it minimises a tearing.
-	if (!TickDelegateHandle.IsValid() && FSlateApplication::IsInitialized())
-	{
-		TickDelegateHandle = FSlateApplication::Get().OnPostTick().AddRaw(this, &FImGuiModuleManager::Tick);
-	}
+	//// Slate Post-Tick is a good moment to end and advance ImGui frame as it minimises a tearing.
+	//if (!TickDelegateHandle.IsValid() && FSlateApplication::IsInitialized())
+	//{
+	//	TickDelegateHandle = FSlateApplication::Get().OnPostTick().AddRaw(this, &FImGuiModuleManager::Tick);
+	//}
 }
 
 void FImGuiModuleManager::UnregisterTick()
@@ -125,23 +125,23 @@ void FImGuiModuleManager::UnregisterTick()
 
 void FImGuiModuleManager::CreateTickInitializer()
 {
-	if (!TickInitializerHandle.IsValid())
-	{
-		// Try to register tick delegate until we finally succeed.
+	//if (!TickInitializerHandle.IsValid())
+	//{
+	//	// Try to register tick delegate until we finally succeed.
 
-		TickInitializerHandle = FModuleManager::Get().OnModulesChanged().AddLambda([this](FName Name, EModuleChangeReason Reason)
-		{
-			if (Reason == EModuleChangeReason::ModuleLoaded)
-			{
-				RegisterTick();
-			}
+	//	TickInitializerHandle = FModuleManager::Get().OnModulesChanged().AddLambda([this](FName Name, EModuleChangeReason Reason)
+	//	{
+	//		if (Reason == EModuleChangeReason::ModuleLoaded)
+	//		{
+	//			RegisterTick();
+	//		}
 
-			if (IsTickRegistered())
-			{
-				ReleaseTickInitializer();
-			}
-		});
-	}
+	//		if (IsTickRegistered())
+	//		{
+	//			ReleaseTickInitializer();
+	//		}
+	//	});
+	//}
 }
 
 void FImGuiModuleManager::ReleaseTickInitializer()

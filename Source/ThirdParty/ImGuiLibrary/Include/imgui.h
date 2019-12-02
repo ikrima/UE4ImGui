@@ -371,6 +371,18 @@ namespace ImGui
     IMGUI_API float         GetFrameHeight();                                               // ~ FontSize + style.FramePadding.y * 2
     IMGUI_API float         GetFrameHeightWithSpacing();                                    // ~ FontSize + style.FramePadding.y * 2 + style.ItemSpacing.y (distance in pixels between 2 consecutive lines of framed widgets)
 
+    IMGUI_API void          BeginHorizontal(const char* str_id, const ImVec2& size = ImVec2(0, 0), float align = -1.0f);
+    IMGUI_API void          BeginHorizontal(const void* ptr_id, const ImVec2& size = ImVec2(0, 0), float align = -1.0f);
+    IMGUI_API void          BeginHorizontal(int id, const ImVec2& size = ImVec2(0, 0), float align = -1);
+    IMGUI_API void          EndHorizontal();
+    IMGUI_API void          BeginVertical(const char* str_id, const ImVec2& size = ImVec2(0, 0), float align = -1.0f);
+    IMGUI_API void          BeginVertical(const void* ptr_id, const ImVec2& size = ImVec2(0, 0), float align = -1.0f);
+    IMGUI_API void          BeginVertical(int id, const ImVec2& size = ImVec2(0, 0), float align = -1);
+    IMGUI_API void          EndVertical();
+    IMGUI_API void          Spring(float weight = 1.0f, float spacing = -1.0f);
+    IMGUI_API void          SuspendLayout();
+    IMGUI_API void          ResumeLayout();
+
     // ID stack/scopes
     // - Read the FAQ for more details about how ID are handled in dear imgui. If you are creating widgets in a loop you most
     //   likely want to push a unique identifier (e.g. object pointer, loop index) to uniquely differentiate them.
@@ -960,12 +972,54 @@ enum ImGuiKey_
     ImGuiKey_Enter,
     ImGuiKey_Escape,
     ImGuiKey_KeyPadEnter,
-    ImGuiKey_A,                 // for text edit CTRL+A: select all
-    ImGuiKey_C,                 // for text edit CTRL+C: copy
-    ImGuiKey_V,                 // for text edit CTRL+V: paste
-    ImGuiKey_X,                 // for text edit CTRL+X: cut
-    ImGuiKey_Y,                 // for text edit CTRL+Y: redo
-    ImGuiKey_Z,                 // for text edit CTRL+Z: undo
+    ImGuiKey_0,         //
+    ImGuiKey_1,         //
+    ImGuiKey_2,         //
+    ImGuiKey_3,         //
+    ImGuiKey_4,         //
+    ImGuiKey_5,         //
+    ImGuiKey_6,         //
+    ImGuiKey_7,         //
+    ImGuiKey_8,         //
+    ImGuiKey_9,         //
+    ImGuiKey_A,         // for text edit CTRL+A: select all
+    ImGuiKey_B,         //
+    ImGuiKey_C,         // for text edit CTRL+C: copy
+    ImGuiKey_D,         //
+    ImGuiKey_E,         //
+    ImGuiKey_F,         //
+    ImGuiKey_G,         //
+    ImGuiKey_H,         //
+    ImGuiKey_I,         //
+    ImGuiKey_J,         //
+    ImGuiKey_K,         //
+    ImGuiKey_L,         //
+    ImGuiKey_M,         //
+    ImGuiKey_N,         //
+    ImGuiKey_O,         //
+    ImGuiKey_P,         //
+    ImGuiKey_Q,         //
+    ImGuiKey_R,         //
+    ImGuiKey_S,         //
+    ImGuiKey_T,         //
+    ImGuiKey_U,         //
+    ImGuiKey_V,         // for text edit CTRL+V: paste
+    ImGuiKey_W,         //
+    ImGuiKey_X,         // for text edit CTRL+X: cut
+    ImGuiKey_Y,         // for text edit CTRL+Y: redo
+    ImGuiKey_Z,         // for text edit CTRL+Z: undo
+    ImGuiKey_F1,        //
+    ImGuiKey_F2,        //
+    ImGuiKey_F3,        //
+    ImGuiKey_F4,        //
+    ImGuiKey_F5,        //
+    ImGuiKey_F6,        //
+    ImGuiKey_F7,        //
+    ImGuiKey_F8,        //
+    ImGuiKey_F9,        //
+    ImGuiKey_F10,       //
+    ImGuiKey_F11,       //
+    ImGuiKey_F12,       //
     ImGuiKey_COUNT
 };
 
@@ -1121,6 +1175,7 @@ enum ImGuiStyleVar_
     ImGuiStyleVar_TabRounding,         // float     TabRounding
     ImGuiStyleVar_ButtonTextAlign,     // ImVec2    ButtonTextAlign
     ImGuiStyleVar_SelectableTextAlign, // ImVec2    SelectableTextAlign
+    ImGuiStyleVar_LayoutAlign,         // float     LayoutAlign
     ImGuiStyleVar_COUNT
 
     // Obsolete names (will be removed)
@@ -1324,6 +1379,7 @@ struct ImGuiStyle
     float       ScrollbarRounding;          // Radius of grab corners for scrollbar.
     float       GrabMinSize;                // Minimum width/height of a grab box for slider/scrollbar.
     float       GrabRounding;               // Radius of grabs corners rounding. Set to 0.0f to have rectangular slider grabs.
+    float       LayoutAlign;                // Element alignment inside horizontal and vertical layouts (0.0f - left/top, 1.0f - right/bottom, 0.5f - center).
     float       TabRounding;                // Radius of upper corners of a tab. Set to 0.0f to have rectangular tabs.
     float       TabBorderSize;              // Thickness of border around tabs.
     ImGuiDir    ColorButtonPosition;        // Side of the color button in the ColorEdit4 widget (left/right). Defaults to ImGuiDir_Right.
@@ -1904,6 +1960,7 @@ struct ImDrawList
     ImVector<ImTextureID>   _TextureIdStack;    // [Internal]
     ImVector<ImVec2>        _Path;              // [Internal] current path building
     ImDrawListSplitter      _Splitter;          // [Internal] for channels api
+    float                   _FringeScale;       // [Internal] anti-alias fringe is scaled by this value, this helps to keep things sharp while zooming at vertex buffer content
 
     // If you want to create ImDrawList instances, pass them ImGui::GetDrawListSharedData() or create and use your own ImDrawListSharedData (so you can use ImDrawList without ImGui)
     ImDrawList(const ImDrawListSharedData* shared_data) { _Data = shared_data; _OwnerName = NULL; Clear(); }

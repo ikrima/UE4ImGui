@@ -10,7 +10,8 @@
 // For backward compatibility we will use FStringClassReference which in newer engine versions is a typedef for
 // FSoftClassPath. Include right soft class reference header to avoid warnings in newer engine version.
 #include <UObject/SoftObjectPath.h>
-#include "ImGuiCommon.h"
+#include "imgui.h"
+#include "imgui_node_editor.h"
 struct ImGuiContext;
 
 #if WITH_EDITOR

@@ -5,10 +5,8 @@
 #include <Core.h>
 #include <Styling/SlateBrush.h>
 #include <Textures/SlateShaderResource.h>
+#include "ImGuiInteroperability.h"
 
-
-// Index type to be used as a texture handle.
-using TextureIndex = int32;
 
 // Manager for textures resources which can be referenced by a unique name or index.
 // Name is primarily for lookup and index provides a direct access to resources.

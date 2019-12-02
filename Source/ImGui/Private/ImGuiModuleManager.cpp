@@ -171,7 +171,6 @@ void FImGuiModuleManager::OnViewportCreated()
 
 	// Create widget to viewport responsible for this event.
 	//AddWidgetToViewport(GEngine->GameViewport);
-    AddNewWindowWidget(*GEngine->GameViewport->GetWorld());
 }
 
 void FImGuiModuleManager::AddWidgetToViewport(UGameViewportClient* GameViewport)
@@ -205,13 +204,9 @@ void FImGuiModuleManager::AddWidgetToViewport(UGameViewportClient* GameViewport)
 }
 
 
-void FImGuiModuleManager::AddNewWindowWidget(UWorld& InWorld) 
+void FImGuiModuleManager::AddNewImGuiWindow(const UWorld& InWorld, const FString& InName, TUniquePtr<FImGuiDrawer> InImGuiDrawer)
 {
     checkf(FSlateApplication::IsInitialized(), TEXT("Slate should be initialized before we can add widget to game viewports."));
-
-    // Make sure that we have a context for this viewport's world and get its index.
-    int32 ContextIndex;
-    auto& ContextProxy = ContextManager.GetWorldContextProxy(InWorld, ContextIndex);
 
     // Make sure that textures are loaded before the first Slate widget is created.
     LoadTextures();
@@ -231,16 +226,17 @@ void FImGuiModuleManager::AddNewWindowWidget(UWorld& InWorld)
         TEXT("IMGUIWidget"),
         FTabManager::ESearchPreference::PreferLiveTab,
         SNew(SDockTab)
-            .Label(NSLOCTEXT("IMGUIWidget", "IMGUIWidget", "IMGUIWidget"))
-            .TabRole(ETabRole::DocumentTab)
-            .ShouldAutosize(true)
-            [
-                SNew(SImGuiBaseWidget)
-				.ModuleManager(this)
-				.ContextIndex(ContextIndex)
-				// To correctly clip borders. Using SScissorRectBox in older versions seems to be not necessary.
-				.Clipping(EWidgetClipping::ClipToBounds)
-            ]
+        .Label(NSLOCTEXT("IMGUIWidget", "IMGUIWidget", "IMGUIWidget"))
+        .TabRole(ETabRole::DocumentTab)
+        .ShouldAutosize(true)
+        [
+            SNew(SImGuiBaseWidget)
+            .ModuleManager(this)
+            .ContextName(InName)
+            .ImGuiDrawer(InImGuiDrawer.Release())
+            // To correctly clip borders. Using SScissorRectBox in older versions seems to be not necessary.
+            .Clipping(EWidgetClipping::ClipToBounds)
+        ]
     );
 }
 

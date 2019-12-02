@@ -12,7 +12,7 @@
 #include <Runtime/Launch/Resources/Version.h>
 
 
-static constexpr float DEFAULT_CANVAS_WIDTH = 3840.f;
+static constexpr float DEFAULT_CANVAS_WIDTH  = 3840.f;
 static constexpr float DEFAULT_CANVAS_HEIGHT = 2160.f;
 
 
@@ -39,13 +39,15 @@ namespace
 		static FString SaveDirectory = GetSaveDirectory();
 		return FPaths::Combine(SaveDirectory, Name + TEXT(".ini"));
 	}
-}
+}	// namespace
 
-FImGuiContextProxy::FImGuiContextProxy(const FString& InName, int32 InContextIndex, FSimpleMulticastDelegate* InSharedDrawEvent, ImFontAtlas* InFontAtlas)
+FImGuiContextProxy::FImGuiContextProxy(
+	const FString& InName, int32 InContextIndex, FSimpleMulticastDelegate* InSharedDrawEvent, ImFontAtlas* InFontAtlas, TUniquePtr<FImGuiDrawer> InDrawer)
 	: Name(InName)
 	, ContextIndex(InContextIndex)
 	, SharedDrawEvent(InSharedDrawEvent)
 	, IniFilename(TCHAR_TO_ANSI(*GetIniFile(InName)))
+    , DrawerObj(MoveTemp(InDrawer))
 {
 	// Create context.
 	Context = ImGui::CreateContext(InFontAtlas);
@@ -60,8 +62,8 @@ FImGuiContextProxy::FImGuiContextProxy(const FString& InName, int32 InContextInd
 	IO.IniFilename = IniFilename.c_str();
 
 	// Use pre-defined canvas size.
-	IO.DisplaySize = { DEFAULT_CANVAS_WIDTH, DEFAULT_CANVAS_HEIGHT };
-	DisplaySize = ImGuiInterops::ToVector2D(IO.DisplaySize);
+	IO.DisplaySize = {DEFAULT_CANVAS_WIDTH, DEFAULT_CANVAS_HEIGHT};
+	DisplaySize	= ImGuiInterops::ToVector2D(IO.DisplaySize);
 
 	// Initialize key mapping, so context can correctly interpret input state.
 	ImGuiInterops::SetUnrealKeyMap(IO);
@@ -69,7 +71,16 @@ FImGuiContextProxy::FImGuiContextProxy(const FString& InName, int32 InContextInd
 	// Begin frame to complete context initialization (this is to avoid problems with other systems calling to ImGui
 	// during startup).
 	BeginFrame();
+
+    if (DrawerObj.IsValid())
+    {
+        DrawerObj->OnInitialize();
+    }
 }
+
+FImGuiContextProxy::FImGuiContextProxy(const FString& Name, ImFontAtlas* InFontAtlas, TUniquePtr<FImGuiDrawer> InDrawer)
+	: FImGuiContextProxy(Name, 0, nullptr, InFontAtlas, MoveTemp(InDrawer))
+{}
 
 FImGuiContextProxy::~FImGuiContextProxy()
 {
@@ -78,6 +89,12 @@ FImGuiContextProxy::~FImGuiContextProxy()
 		// It seems that to properly shutdown context we need to set it as the current one (at least in this framework
 		// version), even though we can pass it to the destroy function.
 		SetAsCurrent();
+
+        if (DrawerObj.IsValid())
+        {
+            DrawerObj->OnDestroy();
+            DrawerObj.Reset();
+        }
 
 		// Save context data and destroy.
 		ImGui::DestroyContext(Context);
@@ -115,34 +132,56 @@ void FImGuiContextProxy::DrawDebug()
 	}
 }
 
-void FImGuiContextProxy::Tick(float DeltaSeconds)
+void FImGuiContextProxy::Tick(float DeltaSeconds, const FVector2D& InDisplaySize)
 {
-	// Making sure that we tick only once per frame.
-	if (LastFrameNumber < GFrameNumber)
+	if (DrawerObj.IsValid())
 	{
-		LastFrameNumber = GFrameNumber;
-
 		SetAsCurrent();
-
-		if (bIsFrameStarted)
-		{
-			// Make sure that draw events are called before the end of the frame.
-			DrawDebug();
-
-			// Ending frame will produce render output that we capture and store for later use. This also puts context to
-			// state in which it does not allow to draw controls, so we want to immediately start a new frame.
-			EndFrame();
-		}
-
-		// Update context information (some data, like mouse cursor, may be cleaned in new frame, so we should collect it
-		// beforehand).
-		bHasActiveItem = ImGui::IsAnyItemActive();
-		bIsMouseHoveringAnyWindow = ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow);
-		MouseCursor = ImGuiInterops::ToSlateMouseCursor(ImGui::GetMouseCursor());
-		DisplaySize = ImGuiInterops::ToVector2D(ImGui::GetIO().DisplaySize);
 
 		// Begin a new frame and set the context back to a state in which it allows to draw controls.
 		BeginFrame(DeltaSeconds);
+
+		DrawerObj->OnDraw();
+		// Ending frame will produce render output that we capture and store for later use. This also puts context to
+		// state in which it does not allow to draw controls, so we want to immediately start a new frame.
+		EndFrame();
+
+		// Update context information (some data, like mouse cursor, may be cleaned in new frame, so we should collect it
+		// beforehand).
+		bHasActiveItem			  = ImGui::IsAnyItemActive();
+		bIsMouseHoveringAnyWindow = ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow);
+		MouseCursor				  = ImGuiInterops::ToSlateMouseCursor(ImGui::GetMouseCursor());
+		DisplaySize				  = InDisplaySize;
+	}
+	else
+	{
+		// Making sure that we tick only once per frame.
+		if (LastFrameNumber < GFrameNumber)
+		{
+			LastFrameNumber = GFrameNumber;
+
+			SetAsCurrent();
+
+			if (bIsFrameStarted)
+			{
+				// Make sure that draw events are called before the end of the frame.
+				DrawDebug();
+
+				// Ending frame will produce render output that we capture and store for later use. This also puts context to
+				// state in which it does not allow to draw controls, so we want to immediately start a new frame.
+				EndFrame();
+			}
+
+			// Update context information (some data, like mouse cursor, may be cleaned in new frame, so we should collect it
+			// beforehand).
+			bHasActiveItem			  = ImGui::IsAnyItemActive();
+			bIsMouseHoveringAnyWindow = ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow);
+			MouseCursor				  = ImGuiInterops::ToSlateMouseCursor(ImGui::GetMouseCursor());
+			DisplaySize				  = InDisplaySize;
+
+            // Begin a new frame and set the context back to a state in which it allows to draw controls.
+            BeginFrame(DeltaSeconds);
+		}
 	}
 }
 
@@ -150,17 +189,23 @@ void FImGuiContextProxy::BeginFrame(float DeltaTime)
 {
 	if (!bIsFrameStarted)
 	{
-		ImGuiIO& IO = ImGui::GetIO();
-		IO.DeltaTime = DeltaTime;
+		ImGuiIO& IO	= ImGui::GetIO();
+		IO.DisplaySize = ImVec2(DisplaySize.X, DisplaySize.Y);
+		IO.DeltaTime   = DeltaTime;
 
 		ImGuiInterops::CopyInput(IO, InputState);
 		InputState.ClearUpdateState();
-
 		ImGui::NewFrame();
 
-		bIsFrameStarted = true;
+		ImGui::SetNextWindowPos(ImVec2(0, 0));
+		ImGui::SetNextWindowSize(IO.DisplaySize);
+		ImGui::Begin("Content", nullptr,
+			ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar
+				| ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoBringToFrontOnFocus);
+
+		bIsFrameStarted			= true;
 		bIsDrawEarlyDebugCalled = false;
-		bIsDrawDebugCalled = false;
+		bIsDrawDebugCalled		= false;
 	}
 }
 
@@ -168,6 +213,8 @@ void FImGuiContextProxy::EndFrame()
 {
 	if (bIsFrameStarted)
 	{
+		ImGui::End();
+
 		// Prepare draw data (after this call we cannot draw to this context until we start a new frame).
 		ImGui::Render();
 
@@ -175,13 +222,13 @@ void FImGuiContextProxy::EndFrame()
 		// next frame.
 		UpdateDrawData(ImGui::GetDrawData());
 
-#ifdef IMGUI_HAS_DOCK 
-        // Update and Render additional Platform Windows
-        if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-        {
-            ImGui::UpdatePlatformWindows();
-            ImGui::RenderPlatformWindowsDefault();
-        }
+#ifdef IMGUI_HAS_DOCK
+		// Update and Render additional Platform Windows
+		if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		{
+			ImGui::UpdatePlatformWindows();
+			ImGui::RenderPlatformWindowsDefault();
+		}
 #endif
 
 		bIsFrameStarted = false;

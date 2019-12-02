@@ -5,6 +5,7 @@
 #include "ImGuiModuleCommands.h"
 
 #include "Utilities/DebugExecBindings.h"
+#include "ImGuiModuleProperties.h"
 
 
 const TCHAR* const FImGuiModuleCommands::ToggleInput = TEXT("ImGui.ToggleInput");

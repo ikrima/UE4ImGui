@@ -11,6 +11,7 @@
 #include <imgui.h>
 
 #include <string>
+#include "ImGuiDrawer.h"
 
 
 // Represents a single ImGui context. All the context updates should be done through this proxy. During update it
@@ -19,7 +20,8 @@ class FImGuiContextProxy
 {
 public:
 
-	FImGuiContextProxy(const FString& Name, int32 InContextIndex, FSimpleMulticastDelegate* InSharedDrawEvent, ImFontAtlas* InFontAtlas);
+    FImGuiContextProxy(const FString& Name, int32 InContextIndex, FSimpleMulticastDelegate* InSharedDrawEvent, ImFontAtlas* InFontAtlas, TUniquePtr<FImGuiDrawer> InDrawer = {});
+    FImGuiContextProxy(const FString& Name, ImFontAtlas* InFontAtlas, TUniquePtr<FImGuiDrawer> InDrawer);
 	~FImGuiContextProxy();
 
 	FImGuiContextProxy(const FImGuiContextProxy&) = delete;
@@ -66,7 +68,7 @@ public:
 	void DrawDebug();
 
 	// Tick to advance context to the next frame. Only one call per frame will be processed.
-	void Tick(float DeltaSeconds);
+	void Tick(float DeltaSeconds, const FVector2D& InDisplaySize);
 
 private:
 
@@ -106,4 +108,5 @@ private:
 	FSimpleMulticastDelegate* SharedDrawEvent = nullptr;
 
 	std::string IniFilename;
+    TUniquePtr<FImGuiDrawer> DrawerObj;
 };

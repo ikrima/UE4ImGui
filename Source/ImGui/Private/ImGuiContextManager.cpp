@@ -88,7 +88,7 @@ void FImGuiContextManager::Tick(float DeltaSeconds)
 		auto& ContextData = Pair.Value;
 		if (ContextData.CanTick())
 		{
-			ContextData.ContextProxy->Tick(DeltaSeconds);
+            ContextData.ContextProxy->Tick(DeltaSeconds, { 3840.f, 2160.f });
 		}
 		else
 		{

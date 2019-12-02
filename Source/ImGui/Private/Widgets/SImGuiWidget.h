@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "ImGuiModuleDebug.h"
 #include "ImGuiModuleSettings.h"
 
 #include <Widgets/SCompoundWidget.h>

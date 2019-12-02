@@ -2,11 +2,11 @@
 
 #pragma once
 
-#include "ImGuiDelegates.h"
 #include "ImGuiModuleProperties.h"
 #include "ImGuiTextureHandle.h"
-
+#include "Templates/UniquePtr.h"
 #include <Modules/ModuleManager.h>
+#include "ImGuiDrawer.h"
 
 
 class FImGuiModule : public IModuleInterface
@@ -34,6 +34,8 @@ public:
 		return FModuleManager::Get().IsModuleLoaded("ImGui");
 	}
 
+    IMGUI_API virtual void AddNewImGuiWindow(const UWorld& InWorld, const FString& InName, TUniquePtr<FImGuiDrawer> InImGuiDrawer);
+
 #if IMGUI_WITH_OBSOLETE_DELEGATES
 
 #if WITH_EDITOR
@@ -46,6 +48,7 @@ public:
 	 */
 	virtual FImGuiDelegateHandle AddEditorImGuiDelegate(const FImGuiDelegate& Delegate);
 #endif
+
 
 	/**
 	 * Add a delegate called at the end of current world debug frame to draw debug controls in its ImGui context,

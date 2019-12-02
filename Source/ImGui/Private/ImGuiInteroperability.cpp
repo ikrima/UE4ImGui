@@ -73,6 +73,7 @@ namespace ImGuiInterops
 				KeyMap[ImGuiKey_Escape] = GetKeyIndex(EKeys::Escape);
 				KeyMap[ImGuiKey_A] = GetKeyIndex(EKeys::A);
 				KeyMap[ImGuiKey_C] = GetKeyIndex(EKeys::C);
+                KeyMap[ImGuiKey_F] = GetKeyIndex(EKeys::F);
 				KeyMap[ImGuiKey_V] = GetKeyIndex(EKeys::V);
 				KeyMap[ImGuiKey_X] = GetKeyIndex(EKeys::X);
 				KeyMap[ImGuiKey_Y] = GetKeyIndex(EKeys::Y);

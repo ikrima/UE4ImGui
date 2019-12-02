@@ -1,6 +1,7 @@
 // Distributed under the MIT License (MIT) (see accompanying LICENSE file)
 
 #include "ImGuiPrivatePCH.h"
+#include "ImGuiModule.h"
 
 #include "ImGuiModuleManager.h"
 
@@ -41,6 +42,12 @@ static FImGuiModuleManager* ImGuiModuleManager = nullptr;
 static FImGuiEditor* ImGuiEditor = nullptr;
 #endif
 
+
+void FImGuiModule::AddNewImGuiWindow(const UWorld& InWorld, const FString& InName, TUniquePtr<FImGuiDrawer> InImGuiDrawer)
+{
+    ImGuiModuleManager->AddNewImGuiWindow(InWorld, InName, MoveTemp(InImGuiDrawer));
+}
+
 #if IMGUI_WITH_OBSOLETE_DELEGATES
 
 #if WITH_EDITOR
@@ -56,7 +63,9 @@ FImGuiDelegateHandle FImGuiModule::AddEditorImGuiDelegate(const FImGuiDelegate& 
 		EDelegateCategory::Default, Utilities::EDITOR_CONTEXT_INDEX };
 #endif // IMGUI_REDIRECT_OBSOLETE_DELEGATES
 }
+
 #endif
+
 
 FImGuiDelegateHandle FImGuiModule::AddWorldImGuiDelegate(const FImGuiDelegate& Delegate)
 {

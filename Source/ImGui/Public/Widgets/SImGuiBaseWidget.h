@@ -2,11 +2,12 @@
 
 #pragma once
 
-#include "ImGuiModuleDebug.h"
 #include "ImGuiModuleSettings.h"
 
 #include <Widgets/SCompoundWidget.h>
-
+#include "ImGuiDelegates.h"
+#include "ImGuiContextProxy.h"
+#include "Templates/UniquePtr.h"
 
 // Hide ImGui Widget debug in non-developer mode.
 #define IMGUI_WIDGET_DEBUG IMGUI_MODULE_DEVELOPER
@@ -25,15 +26,13 @@ public:
 	SLATE_BEGIN_ARGS(SImGuiBaseWidget)
 	{}
 	SLATE_ARGUMENT(FImGuiModuleManager*, ModuleManager)
-	SLATE_ARGUMENT(int32, ContextIndex)
+    SLATE_ARGUMENT(FString, ContextName)
+	SLATE_ARGUMENT(FImGuiDrawer*, ImGuiDrawer)
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs);
 
 	~SImGuiBaseWidget();
-
-	// Get index of the context that this widget is targeting.
-	int32 GetContextIndex() const { return ContextIndex; }
 
 	//----------------------------------------------------------------------------------------------------
 	// SWidget overrides
@@ -77,9 +76,6 @@ public:
 
 private:
 
-	void CreateInputHandler(const FStringClassReference& HandlerClassReference);
-	void ReleaseInputHandler();
-
 	void RegisterImGuiSettingsDelegates();
 	void UnregisterImGuiSettingsDelegates();
 
@@ -95,17 +91,13 @@ private:
 
 	void UpdateCanvasControlMode(const FInputEvent& InputEvent);
 
-	void OnPostImGuiUpdate();
-
 	FVector2D TransformScreenPointToImGui(const FGeometry& MyGeometry, const FVector2D& Point) const;
 
 	virtual int32 OnPaint(const FPaintArgs& Args, const FGeometry& AllottedGeometry, const FSlateRect& MyClippingRect, FSlateWindowElementList& OutDrawElements, int32 LayerId, const FWidgetStyle& WidgetStyle, bool bParentEnabled) const override;
 
 	void SetImGuiTransform(const FSlateRenderTransform& Transform) { ImGuiTransform = Transform; }
 
-#if IMGUI_WIDGET_DEBUG
 	void OnDebugDraw();
-#endif // IMGUI_WIDGET_DEBUG
 
 	FImGuiModuleManager* ModuleManager = nullptr;
 	TWeakObjectPtr<UImGuiInputHandler> InputHandler;
@@ -116,11 +108,11 @@ private:
 	mutable TArray<FSlateVertex> VertexBuffer;
 	mutable TArray<SlateIndex> IndexBuffer;
 
-	int32 ContextIndex = 0;
-
 	bool bInputEnabled = true;
 	bool bHideMouseCursor = true;
 
 	TSharedPtr<SImGuiCanvasControl> CanvasControlWidget;
 	TWeakPtr<SWidget> PreviousUserFocusedWidget;
+
+    TUniquePtr<FImGuiContextProxy> ContextProxy;
 };

@@ -3,7 +3,7 @@
 #pragma once
 
 #include <Core.h>
-
+#include "ImGuiPrivatePCH.h"
 
 /**
  * Delegates to ImGui debug events. World delegates are called once per frame during world updates and have invocation
@@ -56,10 +56,6 @@ public:
 	 */
 	static FSimpleMulticastDelegate& OnMultiContextDebug();
 };
-
-
-/** Enable to support legacy ImGui delegates API. */
-#define IMGUI_WITH_OBSOLETE_DELEGATES 1
 
 #if IMGUI_WITH_OBSOLETE_DELEGATES
 

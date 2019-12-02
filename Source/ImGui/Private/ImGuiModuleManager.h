@@ -9,7 +9,7 @@
 #include "ImGuiModuleSettings.h"
 #include "TextureManager.h"
 #include "Widgets/SImGuiLayout.h"
-
+#include "Templates/UniquePtr.h"
 
 // Central manager that implements module logic. It initializes and controls remaining module components.
 class FImGuiModuleManager
@@ -59,7 +59,7 @@ private:
 	void OnViewportCreated();
 
 	void AddWidgetToViewport(UGameViewportClient* GameViewport);
-    void AddNewWindowWidget(UWorld& InWorld);
+    void AddNewImGuiWindow(const UWorld& InWorld, const FString& InName, TUniquePtr<FImGuiDrawer> InImGuiDrawer);
 	void AddWidgetsToActiveViewports();
 
 	void OnContextProxyCreated(int32 ContextIndex, FImGuiContextProxy& ContextProxy);

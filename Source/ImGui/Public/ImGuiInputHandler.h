@@ -15,6 +15,7 @@ class UGameViewportClient;
 struct FAnalogInputEvent;
 struct FCharacterEvent;
 struct FKeyEvent;
+class FImGuiContextProxy;
 
 #if WITH_EDITOR
 class FUICommandInfo;
@@ -131,6 +132,7 @@ public:
 	/** Called to handle deactivation of the mouse input. */
 	virtual void OnMouseInputDisabled();
 
+    void Initialize(FImGuiModuleManager* InModuleManager, FImGuiContextProxy& InContextProxy);
 protected:
 
 	/** Copy state of modifier keys to input state. */
@@ -174,8 +176,7 @@ private:
 	void OnPostImGuiUpdate();
 
 	void Initialize(FImGuiModuleManager* InModuleManager, int32 InContextIndex);
-
-	virtual void BeginDestroy() override;
+    virtual void BeginDestroy() override;
 
 	class FImGuiInputState* InputState = nullptr;
 
@@ -186,6 +187,7 @@ private:
 	FImGuiModuleManager* ModuleManager = nullptr;
 
 	int32 ContextIndex = -1;
+    FImGuiContextProxy* ContextProxy = nullptr;
 
 #if WITH_EDITOR
 	TSharedPtr<FUICommandInfo> StopPlaySessionCommandInfo;

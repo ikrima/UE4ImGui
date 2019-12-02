@@ -530,7 +530,7 @@ int32 SImGuiWidget::OnPaint(const FPaintArgs& Args, const FGeometry& AllottedGeo
 	{
 		// Manually update ImGui context to minimise lag between creating and rendering ImGui output. This will also
 		// keep frame tearing at minimum because it is executed at the very end of the frame.
-		ContextProxy->Tick(FSlateApplication::Get().GetDeltaTime());
+		ContextProxy->Tick(FSlateApplication::Get().GetDeltaTime(), { 3840.f, 2160.f });
 
 		// Calculate transform from ImGui to screen space. Rounding translation is necessary to keep it pixel-perfect
 		// in older engine versions.

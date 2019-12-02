@@ -6,18 +6,9 @@ using UnrealBuildTool;
 
 public class ImGui : ModuleRules
 {
-#if WITH_FORWARDED_MODULE_RULES_CTOR
 	public ImGui(ReadOnlyTargetRules Target) : base(Target)
-#else
-	public ImGui(TargetInfo Target)
-#endif
 	{
-
-#if WITH_FORWARDED_MODULE_RULES_CTOR
 		bool bBuildEditor = Target.bBuildEditor;
-#else
-		bool bBuildEditor = (Target.Type == TargetRules.TargetType.Editor);
-#endif
 
 		// Developer modules are automatically loaded only in editor builds but can be stripped out from other builds.
 		// Enable runtime loader, if you want this module to be automatically loaded in runtime builds (monolithic).
@@ -27,9 +18,7 @@ public class ImGui : ModuleRules
         bEnforceIWYU = false;
         bFasterWithoutUnity = true;
 
-#if UE_4_21_OR_LATER
-		PrivatePCHHeaderFile = "Private/ImGuiPrivatePCH.h";
-#endif
+		PrivatePCHHeaderFile = "Public/ImGuiPrivatePCH.h";
 
         PublicIncludePaths.AddRange(
 			new string[] {
@@ -105,11 +94,6 @@ public class ImGui : ModuleRules
 				// ... add any modules that your module loads dynamically here ...
 			}
 			);
-
-
-#if !UE_4_19_OR_LATER
-		List<string> PrivateDefinitions = Definitions;
-#endif
 
 		PrivateDefinitions.Add(string.Format("RUNTIME_LOADER_ENABLED={0}", bEnableRuntimeLoader ? 1 : 0));
 	}

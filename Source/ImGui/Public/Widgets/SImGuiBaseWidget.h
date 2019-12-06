@@ -5,7 +5,6 @@
 #include "ImGuiModuleSettings.h"
 
 #include <Widgets/SCompoundWidget.h>
-#include "ImGuiDelegates.h"
 #include "ImGuiContextProxy.h"
 #include "Templates/UniquePtr.h"
 

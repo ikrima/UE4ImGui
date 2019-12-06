@@ -1784,3 +1784,5 @@ void LoadEditorStateFromDisk(EditorContext* editor, const char* file_name)
     ImGui::MemFree(file_data);
 }
 } // namespace imnodes
+
+#undef IMGUI_DEFINE_MATH_OPERATORS

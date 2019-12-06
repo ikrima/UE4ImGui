@@ -1,16 +1,13 @@
 // Distributed under the MIT License (MIT) (see accompanying LICENSE file)
 
-#include "ImGuiPrivatePCH.h"
 
 #include "ImGuiContextManager.h"
 
-#include "ImGuiDelegatesContainer.h"
-#include "ImGuiImplementation.h"
+#include "UnrealImGui.h"
 #include "Utilities/ScopeGuards.h"
 #include "Utilities/WorldContext.h"
 #include "Utilities/WorldContextIndex.h"
 
-#include <imgui.h>
 #include "ImGuiTheming.h"
 #include "IconFontCppHeaders/IconsFontAwesome5.h"
 #include "ImGuiAlFonts/CousineRegular.inl"

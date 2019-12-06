@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <imgui.h>
+#include "UnrealImGui.h"
 
 class FImGuiModuleProperties;
 

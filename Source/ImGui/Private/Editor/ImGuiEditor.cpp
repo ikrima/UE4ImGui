@@ -1,10 +1,10 @@
 // Distributed under the MIT License (MIT) (see accompanying LICENSE file)
 
-#include "ImGuiPrivatePCH.h"
 
 #if WITH_EDITOR
-
 #include "ImGuiEditor.h"
+
+#include "UnrealImGui.h"
 
 #include "ImGuiKeyInfoCustomization.h"
 #include "ImGuiModuleSettings.h"

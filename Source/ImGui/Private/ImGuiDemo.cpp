@@ -1,8 +1,8 @@
 // Distributed under the MIT License (MIT) (see accompanying LICENSE file)
 
-#include "ImGuiPrivatePCH.h"
 
 #include "ImGuiDemo.h"
+#include "UnrealImGui.h"
 
 #include "ImGuiModuleProperties.h"
 

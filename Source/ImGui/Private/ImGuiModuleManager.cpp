@@ -1,15 +1,14 @@
 // Distributed under the MIT License (MIT) (see accompanying LICENSE file)
 
-#include "ImGuiPrivatePCH.h"
 
 #include "ImGuiModuleManager.h"
+#include "UnrealImGui.h"
 
 #include "ImGuiInteroperability.h"
 #include "Utilities/WorldContextIndex.h"
 
 #include <Modules/ModuleManager.h>
 
-#include <imgui.h>
 #include "Widgets/Docking/SDockTab.h"
 #include "Framework/Docking/TabManager.h"
 

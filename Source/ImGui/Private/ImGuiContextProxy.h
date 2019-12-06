@@ -8,8 +8,6 @@
 
 #include <GenericPlatform/ICursor.h>
 
-#include <imgui.h>
-
 #include <string>
 #include "ImGuiDrawer.h"
 #include "ImGuiTheming.h"
@@ -21,8 +19,7 @@ class FImGuiContextProxy
 {
 public:
 
-    FImGuiContextProxy(const FString& Name, int32 InContextIndex, FSimpleMulticastDelegate* InSharedDrawEvent, ImFontAtlas* InFontAtlas, TUniquePtr<FImGuiDrawer> InDrawer = {});
-    FImGuiContextProxy(const FString& Name, ImFontAtlas* InFontAtlas, TUniquePtr<FImGuiDrawer> InDrawer);
+    FImGuiContextProxy(const FString& Name, ImFontAtlas* InFontAtlas, TUniquePtr<FImGuiDrawer> InDrawer = {}, const FImGuiThemeStyle& InThemeStyle = {});
 	~FImGuiContextProxy();
 
 	FImGuiContextProxy(const FImGuiContextProxy&) = delete;
@@ -59,15 +56,6 @@ public:
 	// Cursor type desired by this context (updated once per frame during context update).
 	EMouseCursor::Type GetMouseCursor() const { return MouseCursor;  }
 
-	// Delegate called right before ending the frame to allows listeners draw their controls.
-	FSimpleMulticastDelegate& OnDraw() { return DrawEvent; }
-
-	// Call early debug events to allow listeners draw their debug widgets.
-	void DrawEarlyDebug();
-
-	// Call debug events to allow listeners draw their debug widgets.
-	void DrawDebug();
-
 	// Tick to advance context to the next frame. Only one call per frame will be processed.
 	void Tick(float DeltaSeconds, const FVector2D& InDisplaySize);
 
@@ -78,12 +66,6 @@ private:
 
 	void UpdateDrawData(ImDrawData* DrawData);
 
-	void BroadcastWorldEarlyDebug();
-	void BroadcastMultiContextEarlyDebug();
-
-	void BroadcastWorldDebug();
-	void BroadcastMultiContextDebug();
-
 	ImGuiContext* Context;
 
 	FVector2D DisplaySize = FVector2D::ZeroVector;
@@ -92,21 +74,13 @@ private:
 	bool bHasActiveItem = false;
 	bool bIsMouseHoveringAnyWindow = false;
 
-	bool bIsFrameStarted = false;
-	bool bIsDrawEarlyDebugCalled = false;
-	bool bIsDrawDebugCalled = false;
-
 	FImGuiInputState InputState;
 
 	TArray<FImGuiDrawList> DrawLists;
 
 	FString Name;
-	int32 ContextIndex = Utilities::INVALID_CONTEXT_INDEX;
 
 	uint32 LastFrameNumber = 0;
-
-	FSimpleMulticastDelegate DrawEvent;
-	FSimpleMulticastDelegate* SharedDrawEvent = nullptr;
 
 	std::string IniFilename;
     TUniquePtr<FImGuiDrawer> DrawerObj;

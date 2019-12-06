@@ -7,7 +7,7 @@
 #include <Runtime/Launch/Resources/Version.h>
 #include <SlateCore.h>
 
-#include <imgui.h>
+#include "UnrealImGui.h"
 
 
 // ImGui draw command data transformed for Slate.

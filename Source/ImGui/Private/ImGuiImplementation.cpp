@@ -1,6 +1,6 @@
 // Distributed under the MIT License (MIT) (see accompanying LICENSE file)
 
-#include "ImGuiPrivatePCH.h"
+#include "UnrealImGui.h"
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui_internal.h"
 
@@ -16,13 +16,6 @@
 #define IMGUI_DISABLE_WIN32_DEFAULT_CLIPBOARD_FUNCTIONS
 #define IMGUI_DISABLE_WIN32_DEFAULT_IME_FUNCTIONS
 #endif // PLATFORM_XBOXONE
-
-#if WITH_EDITOR
-// Global ImGui context pointer.
-IMGUI_API ImGuiContext* GImGuiContextPtr = nullptr;
-// Handle to the global ImGui context pointer.
-IMGUI_API ImGuiContext** GImGuiContextPtrHandle = &GImGuiContextPtr;
-#endif // WITH_EDITOR
 
 #if PLATFORM_WINDOWS
 #include <Windows/AllowWindowsPlatformTypes.h>
@@ -41,17 +34,4 @@ IMGUI_API ImGuiContext** GImGuiContextPtrHandle = &GImGuiContextPtr;
 #include "ImGuiInteroperability.h"
 
 
-namespace ImGuiImplementation
-{
-#if WITH_EDITOR
-	ImGuiContext** GetImGuiContextHandle()
-	{
-		return GImGuiContextPtrHandle;
-	}
-
-	void SetImGuiContextHandle(ImGuiContext** Handle)
-	{
-		GImGuiContextPtrHandle = Handle;
-	}
-#endif // WITH_EDITOR
-}
+#undef IMGUI_DEFINE_MATH_OPERATORS

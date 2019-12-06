@@ -1,8 +1,8 @@
 // Distributed under the MIT License (MIT) (see accompanying LICENSE file)
 
-#include "ImGuiPrivatePCH.h"
 
 #include "Widgets/SImGuiBaseWidget.h"
+#include "UnrealImGui.h"
 #include "SImGuiCanvasControl.h"
 
 #include "ImGuiContextManager.h"

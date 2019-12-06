@@ -14,14 +14,6 @@
 #include "imgui_node_editor.h"
 struct ImGuiContext;
 
-#if WITH_EDITOR
-extern IMGUI_API ImGuiContext* GImGuiContextPtr;
-extern IMGUI_API ImGuiContext** GImGuiContextPtrHandle;
-// Get the global ImGui context pointer (GImGui) indirectly to allow redirections in obsolete modules.
-#define GImGui (*GImGuiContextPtrHandle)
-#endif
-
-
 // If enabled, it activates debug code and console variables that in normal usage are hidden.
 #define IMGUI_MODULE_DEVELOPER 1
 
@@ -29,16 +21,8 @@ extern IMGUI_API ImGuiContext** GImGuiContextPtrHandle;
 // Input Handler logger (used also in non-developer mode to raise problems with handler extensions).
 DECLARE_LOG_CATEGORY_EXTERN(LogImGuiInputHandler, Warning, All);
 
-/** Enable to support legacy ImGui delegates API. */
-#ifndef IMGUI_WITH_OBSOLETE_DELEGATES
-#define IMGUI_WITH_OBSOLETE_DELEGATES 0
-#endif
-
-
-
 #define BELOW_ENGINE_VERSION(Major, Minor)  (ENGINE_MAJOR_VERSION < (Major) || (ENGINE_MAJOR_VERSION == (Major) && ENGINE_MINOR_VERSION < (Minor)))
 #define FROM_ENGINE_VERSION(Major, Minor)   !BELOW_ENGINE_VERSION(Major, Minor)
-
 
 // One place to define compatibility with older engine versions.
 

@@ -36,48 +36,6 @@ public:
 
     IMGUI_API virtual void AddNewImGuiWindow(const UWorld& InWorld, const FString& InName, TUniquePtr<FImGuiDrawer> InImGuiDrawer);
 
-#if IMGUI_WITH_OBSOLETE_DELEGATES
-
-#if WITH_EDITOR
-	/**
-	 * Add a delegate called at the end of editor debug frame to draw debug controls in its ImGui context, creating
-	 * that context on demand.
-	 *
-	 * @param Delegate - Delegate that we want to add (@see FImGuiDelegate::Create...)
-	 * @returns Returns handle that can be used to remove delegate (@see RemoveImGuiDelegate)
-	 */
-	virtual FImGuiDelegateHandle AddEditorImGuiDelegate(const FImGuiDelegate& Delegate);
-#endif
-
-
-	/**
-	 * Add a delegate called at the end of current world debug frame to draw debug controls in its ImGui context,
-	 * creating that context on demand.
-	 * This function will throw if called outside of a world context (i.e. current world cannot be found).
-	 *
-	 * @param Delegate - Delegate that we want to add (@see FImGuiDelegate::Create...)
-	 * @returns Returns handle that can be used to remove delegate (@see RemoveImGuiDelegate)
-	 */
-	virtual FImGuiDelegateHandle AddWorldImGuiDelegate(const FImGuiDelegate& Delegate);
-
-	/**
-	 * Add shared delegate called for each ImGui context at the end of debug frame, after calling context specific
-	 * delegate. This delegate will be used for any ImGui context, created before or after it is registered.
-	 *
-	 * @param Delegate - Delegate that we want to add (@see FImGuiDelegate::Create...)
-	 * @returns Returns handle that can be used to remove delegate (@see RemoveImGuiDelegate)
-	 */
-	virtual FImGuiDelegateHandle AddMultiContextImGuiDelegate(const FImGuiDelegate& Delegate);
-
-	/**
-	 * Remove delegate added with any version of Add...ImGuiDelegate
-	 *
-	 * @param Handle - Delegate handle that was returned by adding function
-	 */
-	virtual void RemoveImGuiDelegate(const FImGuiDelegateHandle& Handle);
-
-#endif // #if IMGUI_WITH_OBSOLETE_DELEGATES
-
 	/**
 	 * If it exists, get a handle to the texture with given resource name.
 	 *
@@ -171,7 +129,5 @@ public:
 
 #if WITH_EDITOR
 	virtual void SetProperties(const FImGuiModuleProperties& Properties);
-	virtual struct ImGuiContext** GetImGuiContextHandle();
-	virtual struct FImGuiDelegatesContainer& GetDelegatesContainer();
 #endif
 };

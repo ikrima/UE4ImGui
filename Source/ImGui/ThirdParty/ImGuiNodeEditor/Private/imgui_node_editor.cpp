@@ -4788,12 +4788,12 @@ void ed::NodeBuilder::End()
     if (m_IsGroup)
     {
         // Groups cannot have pins. Discard them.
-        for (auto pin = m_CurrentNode->m_LastPin; pin; pin = pin->m_PreviousPin)
-            pin->Reset();
+        //for (auto pin = m_CurrentNode->m_LastPin; pin; pin = pin->m_PreviousPin)
+        //    pin->Reset();
 
         m_CurrentNode->m_Type        = NodeType::Group;
         m_CurrentNode->m_GroupBounds = m_GroupBounds;
-        m_CurrentNode->m_LastPin     = nullptr;
+        //m_CurrentNode->m_LastPin     = nullptr;
     }
     else
         m_CurrentNode->m_Type        = NodeType::Node;

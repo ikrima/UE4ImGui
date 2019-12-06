@@ -351,12 +351,20 @@ void FImGuiThemeStyle::OnInit(ImFontAtlas& InFontAtlas)
 	io.ConfigWindowsMoveFromTitleBarOnly = true;
 
 	SetImGuiStyle();
+}
+
+void FImGuiThemeStyle::OnBegin() 
+{
     ImGui::PushFont(fontAtlas->Fonts[uint8(themeFont)]);
+}
+
+void FImGuiThemeStyle::OnEnd() 
+{
+    ImGui::PopFont();
 }
 
 void FImGuiThemeStyle::OnDestroy()
 {
-    ImGui::PopFont();
 }
 
 void FImGuiThemeStyle::SetImGuiStyle()

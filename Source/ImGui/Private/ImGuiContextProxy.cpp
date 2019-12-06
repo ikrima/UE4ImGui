@@ -63,7 +63,6 @@ FImGuiContextProxy::FImGuiContextProxy(const FString& InName, ImFontAtlas* InFon
 
 	// Begin frame to complete context initialization (this is to avoid problems with other systems calling to ImGui
 	// during startup).
-	BeginFrame();
 
 	if (DrawerObj.IsValid())
 	{
@@ -81,13 +80,14 @@ FImGuiContextProxy::~FImGuiContextProxy()
 		// version), even though we can pass it to the destroy function.
 		SetAsCurrent();
 
+		ThemeStyle.OnDestroy();
+
 		if (DrawerObj.IsValid())
 		{
 			DrawerObj->OnDestroy();
 			DrawerObj.Reset();
 		}
 
-		ThemeStyle.OnDestroy();
 
 		// Save context data and destroy.
 		ImGui::DestroyContext(Context);
@@ -99,12 +99,50 @@ void FImGuiContextProxy::Tick(float DeltaSeconds, const FVector2D& InDisplaySize
 	SetAsCurrent();
 
 	// Begin a new frame and set the context back to a state in which it allows to draw controls.
-	BeginFrame(DeltaSeconds);
+    {
+        ImGuiIO& IO	= ImGui::GetIO();
+	    IO.DisplaySize = ImVec2(DisplaySize.X, DisplaySize.Y);
+	    IO.DeltaTime   = DeltaSeconds;
 
-	DrawerObj->OnDraw();
+	    ImGuiInterops::CopyInput(IO, InputState);
+	    InputState.ClearUpdateState();
+	    ImGui::NewFrame();
+
+	    ImGui::SetNextWindowPos(ImVec2(0, 0));
+	    ImGui::SetNextWindowSize(IO.DisplaySize);
+	    ImGui::Begin("Content", nullptr,
+		    ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse
+			    | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoBringToFrontOnFocus);
+    }
+
+    // Tick Drawer 
+	{
+		ThemeStyle.OnBegin();
+		DrawerObj->OnDraw();
+		ThemeStyle.OnEnd();
+	}
+
 	// Ending frame will produce render output that we capture and store for later use. This also puts context to
 	// state in which it does not allow to draw controls, so we want to immediately start a new frame.
-	EndFrame();
+    {
+	    ImGui::End();
+
+	    // Prepare draw data (after this call we cannot draw to this context until we start a new frame).
+	    ImGui::Render();
+
+	    // Update our draw data, so we can use them later during Slate rendering while ImGui is in the middle of the
+	    // next frame.
+	    UpdateDrawData(ImGui::GetDrawData());
+
+    #ifdef IMGUI_HAS_DOCK
+	    // Update and Render additional Platform Windows
+	    if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	    {
+		    ImGui::UpdatePlatformWindows();
+		    ImGui::RenderPlatformWindowsDefault();
+	    }
+    #endif
+    }
 
 	// Update context information (some data, like mouse cursor, may be cleaned in new frame, so we should collect it
 	// beforehand).
@@ -114,43 +152,6 @@ void FImGuiContextProxy::Tick(float DeltaSeconds, const FVector2D& InDisplaySize
 	DisplaySize				  = InDisplaySize;
 }
 
-void FImGuiContextProxy::BeginFrame(float DeltaTime)
-{
-	ImGuiIO& IO	= ImGui::GetIO();
-	IO.DisplaySize = ImVec2(DisplaySize.X, DisplaySize.Y);
-	IO.DeltaTime   = DeltaTime;
-
-	ImGuiInterops::CopyInput(IO, InputState);
-	InputState.ClearUpdateState();
-	ImGui::NewFrame();
-
-	ImGui::SetNextWindowPos(ImVec2(0, 0));
-	ImGui::SetNextWindowSize(IO.DisplaySize);
-	ImGui::Begin("Content", nullptr,
-		ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse
-			| ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoBringToFrontOnFocus);
-}
-
-void FImGuiContextProxy::EndFrame()
-{
-	ImGui::End();
-
-	// Prepare draw data (after this call we cannot draw to this context until we start a new frame).
-	ImGui::Render();
-
-	// Update our draw data, so we can use them later during Slate rendering while ImGui is in the middle of the
-	// next frame.
-	UpdateDrawData(ImGui::GetDrawData());
-
-#ifdef IMGUI_HAS_DOCK
-	// Update and Render additional Platform Windows
-	if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-	{
-		ImGui::UpdatePlatformWindows();
-		ImGui::RenderPlatformWindowsDefault();
-	}
-#endif
-}
 
 void FImGuiContextProxy::UpdateDrawData(ImDrawData* DrawData)
 {

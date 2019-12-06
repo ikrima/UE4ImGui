@@ -61,9 +61,6 @@ public:
 
 private:
 
-	void BeginFrame(float DeltaTime = 1.f / 60.f);
-	void EndFrame();
-
 	void UpdateDrawData(ImDrawData* DrawData);
 
 	ImGuiContext* Context;

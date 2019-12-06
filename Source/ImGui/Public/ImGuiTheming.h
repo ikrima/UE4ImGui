@@ -32,15 +32,15 @@ struct IMGUI_API FImGuiThemeStyle
 {
 	GENERATED_BODY()
 
-	EIMTheme	   theme							= EIMTheme::Dark;
-	EIMThemeFont   themeFont						= EIMThemeFont::Roboto;
-	float		   fontSize							= 16.0f;
-    ImFontAtlas*   fontAtlas = nullptr;
+	EIMTheme	 theme	   = EIMTheme::Dark;
+	EIMThemeFont themeFont = EIMThemeFont::Roboto;
+	float		 fontSize  = 13.0f;
+	ImFontAtlas* fontAtlas = nullptr;
 
-	void OnInit(ImFontAtlas& InFontAtlas);
-    void OnBegin();
-    void OnEnd();
-	void OnDestroy();
-	void SetImGuiStyle();
+	void		OnInit(ImFontAtlas& InFontAtlas);
+	void		OnBegin();
+	void		OnEnd();
+	void		OnDestroy();
+	void		SetImGuiStyle();
 	static void SetTheme(EIMTheme);
 };

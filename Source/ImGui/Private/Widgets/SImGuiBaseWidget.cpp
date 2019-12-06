@@ -56,13 +56,12 @@ namespace CVars
 #endif // IMGUI_WIDGET_DEBUG
 
 
-BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
-void SImGuiBaseWidget::Construct(const FArguments& InArgs)
+void SImGuiBaseWidget::Construct(const FArguments& InArgs, TUniquePtr<FImGuiDrawer> InImGuiDrawer, const FImGuiThemeStyle& InThemeStyle)
 {
 	checkf(InArgs._ModuleManager, TEXT("Null Module Manager argument"));
 
 	ModuleManager = InArgs._ModuleManager;
-    ContextProxy = MakeUnique<FImGuiContextProxy>(InArgs._ContextName, &ModuleManager->GetContextManager().GetFontAtlas(), TUniquePtr<FImGuiDrawer>(InArgs._ImGuiDrawer));
+    ContextProxy = MakeUnique<FImGuiContextProxy>(InArgs._ContextName, &ModuleManager->GetContextManager().GetFontAtlas(), MoveTemp(InImGuiDrawer), InThemeStyle);
 
 	// Register for settings change.
 	RegisterImGuiSettingsDelegates();
@@ -85,7 +84,6 @@ void SImGuiBaseWidget::Construct(const FArguments& InArgs)
 
 	ImGuiTransform = CanvasControlWidget->GetTransform();
 }
-END_SLATE_FUNCTION_BUILD_OPTIMIZATION
 
 SImGuiBaseWidget::~SImGuiBaseWidget()
 {

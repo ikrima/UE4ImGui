@@ -34,21 +34,17 @@ void FImGuiModuleManager::AddNewImGuiWindow(const UWorld& InWorld, const FString
     checkf(FSlateApplication::IsInitialized(), TEXT("Slate should be initialized before we can add widget to game viewports."));
 
     // Load & Build textures: Make sure that textures are loaded before the first Slate widget is created.
-    {        
-	    checkf(FSlateApplication::IsInitialized(), TEXT("Slate should be initialized before we can create textures."));
+	if (!bTexturesAndFontsLoaded)
+	{
+        bTexturesAndFontsLoaded = true;
 
-	    if (!bTexturesAndFontsLoaded)
-	    {
-            bTexturesAndFontsLoaded = true;
+		TextureManager.InitializeErrorTexture(FColor::Magenta);
 
-		    TextureManager.InitializeErrorTexture(FColor::Magenta);
-
-		    // Create an empty texture at index 0. We will use it for ImGui outputs with null texture id.
-		    TextureManager.CreatePlainTexture(FName{ "ImGuiModule_Plain" }, 2, 2, FColor::White);
-	    }
-
+		// Create an empty texture at index 0. We will use it for ImGui outputs with null texture id.
+		TextureManager.CreatePlainTexture(FName{ "ImGuiModule_Plain" }, 2, 2, FColor::White);
+            
         ContextManager.BuildFonts(TextureManager);
-    }
+	}
 
     FTabManager* const tabManager = [] {
 #if WITH_EDITOR
@@ -68,10 +64,9 @@ void FImGuiModuleManager::AddNewImGuiWindow(const UWorld& InWorld, const FString
         .TabRole(ETabRole::DocumentTab)
         .ShouldAutosize(true)
         [
-            SNew(SImGuiBaseWidget)
+            SNew(SImGuiBaseWidget, MoveTemp(InImGuiDrawer), FImGuiThemeStyle{ EIMTheme::Dark, EIMThemeFont::Roboto, 13.0f })
             .ModuleManager(this)
             .ContextName(InName)
-            .ImGuiDrawer(InImGuiDrawer.Release())
             // To correctly clip borders. Using SScissorRectBox in older versions seems to be not necessary.
             .Clipping(EWidgetClipping::ClipToBounds)
         ]

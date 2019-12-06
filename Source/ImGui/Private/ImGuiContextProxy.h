@@ -19,7 +19,7 @@ class FImGuiContextProxy
 {
 public:
 
-    FImGuiContextProxy(const FString& Name, ImFontAtlas* InFontAtlas, TUniquePtr<FImGuiDrawer> InDrawer = {}, const FImGuiThemeStyle& InThemeStyle = {});
+    FImGuiContextProxy(const FString& Name, ImFontAtlas* InFontAtlas, TUniquePtr<FImGuiDrawer> InDrawer, const FImGuiThemeStyle& InThemeStyle);
 	~FImGuiContextProxy();
 
 	FImGuiContextProxy(const FImGuiContextProxy&) = delete;

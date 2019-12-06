@@ -26,10 +26,9 @@ public:
 	{}
 	SLATE_ARGUMENT(FImGuiModuleManager*, ModuleManager)
     SLATE_ARGUMENT(FString, ContextName)
-	SLATE_ARGUMENT(FImGuiDrawer*, ImGuiDrawer)
 	SLATE_END_ARGS()
 
-	void Construct(const FArguments& InArgs);
+	void Construct(const FArguments& InArgs, TUniquePtr<FImGuiDrawer> InImGuiDrawer, const FImGuiThemeStyle& InThemeStyle);
 
 	~SImGuiBaseWidget();
 

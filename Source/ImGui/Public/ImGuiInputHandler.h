@@ -175,7 +175,6 @@ private:
 
 	void OnPostImGuiUpdate();
 
-	void Initialize(FImGuiModuleManager* InModuleManager, int32 InContextIndex);
     virtual void BeginDestroy() override;
 
 	class FImGuiInputState* InputState = nullptr;
@@ -192,6 +191,4 @@ private:
 #if WITH_EDITOR
 	TSharedPtr<FUICommandInfo> StopPlaySessionCommandInfo;
 #endif
-
-	friend class FImGuiInputHandlerFactory;
 };

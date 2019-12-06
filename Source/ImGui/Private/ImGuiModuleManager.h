@@ -8,7 +8,6 @@
 #include "ImGuiModuleProperties.h"
 #include "ImGuiModuleSettings.h"
 #include "TextureManager.h"
-#include "Widgets/SImGuiLayout.h"
 #include "Templates/UniquePtr.h"
 
 // Central manager that implements module logic. It initializes and controls remaining module components.
@@ -31,41 +30,17 @@ public:
 	// Get texture resources manager.
 	FTextureManager& GetTextureManager() { return TextureManager; }
 
-	// Event called right after ImGui is updated, to give other subsystems chance to react.
-	FSimpleMulticastDelegate& OnPostImGuiUpdate() { return PostImGuiUpdateEvent; }
-
 private:
 
 	FImGuiModuleManager();
-	~FImGuiModuleManager();
 
 	FImGuiModuleManager(const FImGuiModuleManager&) = delete;
 	FImGuiModuleManager& operator=(const FImGuiModuleManager&) = delete;
-
 	FImGuiModuleManager(FImGuiModuleManager&&) = delete;
 	FImGuiModuleManager& operator=(FImGuiModuleManager&&) = delete;
 
-	void LoadTextures();
-
-	bool IsTickRegistered() { return TickDelegateHandle.IsValid(); }
-	void RegisterTick();
-	void UnregisterTick();
-
-	void CreateTickInitializer();
-	void ReleaseTickInitializer();
-
-	void Tick(float DeltaSeconds);
-
-	void OnViewportCreated();
-
-	void AddWidgetToViewport(UGameViewportClient* GameViewport);
+	//void AddWidgetToViewport(UGameViewportClient* GameViewport);
     void AddNewImGuiWindow(const UWorld& InWorld, const FString& InName, TUniquePtr<FImGuiDrawer> InImGuiDrawer);
-	void AddWidgetsToActiveViewports();
-
-	void OnContextProxyCreated(int32 ContextIndex, FImGuiContextProxy& ContextProxy);
-
-	// Event that we call after ImGui is updated.
-	FSimpleMulticastDelegate PostImGuiUpdateEvent;
 
 	// Collection of module state properties.
 	FImGuiModuleProperties Properties;
@@ -85,12 +60,5 @@ private:
 	// Manager for textures resources.
 	FTextureManager TextureManager;
 
-	// Slate widgets that we created.
-	TArray<TWeakPtr<SImGuiLayout>> Widgets;
-
-	FDelegateHandle TickInitializerHandle;
-	FDelegateHandle TickDelegateHandle;
-	FDelegateHandle ViewportCreatedHandle;
-
-	bool bTexturesLoaded = false;
+	bool bTexturesAndFontsLoaded = false;
 };

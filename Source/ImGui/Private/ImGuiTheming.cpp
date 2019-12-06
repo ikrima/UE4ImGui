@@ -1,9 +1,4 @@
 #include "ImGuiTheming.h"
-#include "IconFontCppHeaders/IconsFontAwesome5.h"
-#include "ImGuiAlFonts/CousineRegular.inl"
-#include "ImGuiAlFonts/KarlaRegular.inl"
-#include "ImGuiAlFonts/GoogleMaterialDesign.inl"
-#include "ImGuiAlFonts/FontAwesome5Solid900.inl"
 #include "Containers/StringConv.h"
 #include "Interfaces/IPluginManager.h"
 
@@ -342,9 +337,10 @@ void FImGuiThemeStyle::SetTheme(EIMTheme InTheme)
 }
 
 
-void FImGuiThemeStyle::OnAttach()
+void FImGuiThemeStyle::OnInit(ImFontAtlas& InFontAtlas)
 {
 	ImGuiIO& io = ImGui::GetIO();
+    fontAtlas = &InFontAtlas;
 	//io.DisplaySize = ImVec2(static_cast<float>(app->GetWindow()->GetWidth()), static_cast<float>(app->GetWindow()->GetHeight()));
 #ifdef IMGUI_HAS_DOCK
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
@@ -355,10 +351,12 @@ void FImGuiThemeStyle::OnAttach()
 	io.ConfigWindowsMoveFromTitleBarOnly = true;
 
 	SetImGuiStyle();
+    ImGui::PushFont(fontAtlas->Fonts[uint8(themeFont)]);
 }
 
-void FImGuiThemeStyle::OnDetach()
+void FImGuiThemeStyle::OnDestroy()
 {
+    ImGui::PopFont();
 }
 
 void FImGuiThemeStyle::SetImGuiStyle()
@@ -366,33 +364,6 @@ void FImGuiThemeStyle::SetImGuiStyle()
 	ImGuiIO& io = ImGui::GetIO();
 
 	ImGui::StyleColorsDark();
-
-    //FString robotoFontPath = FPaths::ConvertRelativePathToFull(FPaths::Combine(FPaths::ProjectContentDir(), TEXT("")));
-    const FString imguiPluginBaseDir = IPluginManager::Get().FindPlugin("ImGui").IsValid() ? IPluginManager::Get().FindPlugin("ImGui")->GetBaseDir() : "";
-    const FString imguiBaseDir = FPaths::ConvertRelativePathToFull(imguiPluginBaseDir / TEXT("Source") / TEXT("ThirdParty") / TEXT("ImGuiLibrary"));
-    const FString robotoFontPath = FPaths::ConvertRelativePathToFull(imguiBaseDir / TEXT("Include") / TEXT("misc") / TEXT("fonts") / TEXT("Roboto-Medium.ttf"));
-	
-
-    ImFontConfig icons_config;
-    icons_config.MergeMode   = false;
-    icons_config.PixelSnapH  = true;
-    icons_config.OversampleH = 2;
-    icons_config.OversampleV = 1;
-    icons_config.OversampleH = icons_config.OversampleV = 1;
-    icons_config.PixelSnapH  = true;
-        
-    io.Fonts->AddFontFromFileTTF(StringCast<ANSICHAR>(*robotoFontPath).Get(), fontSize, &icons_config);
-	AddIconFont();
-
-	io.Fonts->AddFontDefault();
-
-    strncpy_s(icons_config.Name, "KarlaRegular", sizeof(icons_config.Name));
-	io.Fonts->AddFontFromMemoryCompressedTTF(KarlaRegular_compressed_data, KarlaRegular_compressed_size, fontSize, &icons_config);
-	AddIconFont();
-
-    strncpy_s(icons_config.Name, "CousineRegular", sizeof(icons_config.Name));
-	io.Fonts->AddFontFromMemoryCompressedTTF(CousineRegular_compressed_data, CousineRegular_compressed_size, fontSize, &icons_config);
-	AddIconFont();
 
     ImGuiStyle& style = ImGui::GetStyle();
         
@@ -429,32 +400,4 @@ void FImGuiThemeStyle::SetImGuiStyle()
 #endif
 
     FImGuiThemeStyle::SetTheme(EIMTheme::Dark);
-}
-
-void FImGuiThemeStyle::AddIconFont()
-{
-	ImGuiIO& io = ImGui::GetIO();
-
-#define USE_FA_ICONS
-#ifdef USE_FA_ICONS
-	static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
-	ImFontConfig icons_config;
-	// merge in icons from Font Awesome
-	icons_config.MergeMode = true;
-	icons_config.PixelSnapH = true;
-	icons_config.OversampleH = 2;
-	icons_config.OversampleV = 1;
-	icons_config.GlyphOffset.y += 1.0f;
-	icons_config.OversampleH = icons_config.OversampleV = 1;
-	icons_config.PixelSnapH = true;
-	icons_config.SizePixels = 13.0f * 1.0f;
-
-	io.Fonts->AddFontFromMemoryCompressedTTF(FontAwesome5Solid900_compressed_data, FontAwesome5Solid900_compressed_size, fontSize, &icons_config, icons_ranges);
-#else
-
-	static const ImWchar ranges[] = { ICON_MIN_MD, ICON_MAX_MD, 0 };
-	ImFontConfig config;
-	config.MergeMode = true;
-	io.Fonts->AddFontFromMemoryCompressedTTF(GoogleMaterialDesign_compressed_data, GoogleMaterialDesign_compressed_size, fontSize, &config, ranges);
-#endif
 }

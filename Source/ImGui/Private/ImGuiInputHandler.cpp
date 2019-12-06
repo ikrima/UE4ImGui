@@ -312,34 +312,6 @@ void UImGuiInputHandler::OnPostImGuiUpdate()
 	InputState->SetGamepad(PlatformApplication.IsValid() && PlatformApplication->IsGamepadAttached());
 }
 
-void UImGuiInputHandler::Initialize(FImGuiModuleManager* InModuleManager, int32 InContextIndex)
-{
-	ModuleManager = InModuleManager;
-	ContextIndex = InContextIndex;
-
-	ContextProxy = ModuleManager->GetContextManager().GetContextProxy(ContextIndex);
-	checkf(ContextProxy, TEXT("Missing context during initialization of input handler: ContextIndex = %d"), ContextIndex);
-	InputState = &ContextProxy->GetInputState();
-
-	// Register to get post-update notifications, so we can clean frame updates.
-	ModuleManager->OnPostImGuiUpdate().AddUObject(this, &UImGuiInputHandler::OnPostImGuiUpdate);
-
-	auto& Settings = ModuleManager->GetSettings();
-	if (!Settings.OnUseSoftwareCursorChanged.IsBoundToObject(this))
-	{
-		Settings.OnUseSoftwareCursorChanged.AddUObject(this, &UImGuiInputHandler::OnSoftwareCursorChanged);
-	}
-
-#if WITH_EDITOR
-	StopPlaySessionCommandInfo = FInputBindingManager::Get().FindCommandInContext("PlayWorld", "StopPlaySession");
-	if (!StopPlaySessionCommandInfo.IsValid())
-	{
-		UE_LOG(LogImGuiInputHandler, Warning, TEXT("Couldn't find 'StopPlaySession' in context 'PlayWorld'. ")
-			TEXT("PIE feature allowing execution of stop command in ImGui input mode will be disabled."));
-	}
-#endif // WITH_EDITOR
-}
-
 void UImGuiInputHandler::Initialize(FImGuiModuleManager* InModuleManager, FImGuiContextProxy& InContextProxy)
 {
 	ModuleManager = InModuleManager;

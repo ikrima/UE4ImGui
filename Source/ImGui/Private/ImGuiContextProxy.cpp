@@ -76,6 +76,8 @@ FImGuiContextProxy::FImGuiContextProxy(
     {
         DrawerObj->OnInitialize();
     }
+
+    ThemeStyle.OnInit(*InFontAtlas);
 }
 
 FImGuiContextProxy::FImGuiContextProxy(const FString& Name, ImFontAtlas* InFontAtlas, TUniquePtr<FImGuiDrawer> InDrawer)
@@ -95,6 +97,8 @@ FImGuiContextProxy::~FImGuiContextProxy()
             DrawerObj->OnDestroy();
             DrawerObj.Reset();
         }
+
+        ThemeStyle.OnDestroy();
 
 		// Save context data and destroy.
 		ImGui::DestroyContext(Context);

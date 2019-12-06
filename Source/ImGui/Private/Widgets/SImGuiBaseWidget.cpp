@@ -1,7 +1,6 @@
 // Distributed under the MIT License (MIT) (see accompanying LICENSE file)
 
 #include "ImGuiPrivatePCH.h"
-#include "SImGuiWidget.h"
 
 #include "Widgets/SImGuiBaseWidget.h"
 #include "SImGuiCanvasControl.h"
@@ -9,7 +8,6 @@
 #include "ImGuiContextManager.h"
 #include "ImGuiContextProxy.h"
 #include "ImGuiInputHandler.h"
-#include "ImGuiInputHandlerFactory.h"
 #include "ImGuiInteroperability.h"
 #include "ImGuiModuleManager.h"
 #include "ImGuiModuleSettings.h"
@@ -34,6 +32,22 @@ DEFINE_LOG_CATEGORY_STATIC(LogImGuiWidget, Warning, All);
 	TEXT("None"))
 
 #define TEXT_BOOL(Val) ((Val) ? TEXT("true") : TEXT("false"))
+
+
+namespace CVars
+{
+    TAutoConsoleVariable<int> DebugWidget(TEXT("ImGui.Debug.Widget"), 0,
+        TEXT("Show debug for SImGuiWidget.\n")
+        TEXT("0: disabled (default)\n")
+        TEXT("1: enabled"),
+        ECVF_Default);
+
+    TAutoConsoleVariable<int> DebugInput(TEXT("ImGui.Debug.Input"), 0,
+        TEXT("Show debug for input state.\n")
+        TEXT("0: disabled (default)\n")
+        TEXT("1: enabled"),
+        ECVF_Default);
+}
 
 #else
 
@@ -84,10 +98,6 @@ SImGuiBaseWidget::~SImGuiBaseWidget()
         InputHandler->RemoveFromRoot();
         InputHandler.Reset();
     }
-
-
-	// Unregister from post-update notifications.
-	ModuleManager->OnPostImGuiUpdate().RemoveAll(this);
 }
 
 void SImGuiBaseWidget::Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime)

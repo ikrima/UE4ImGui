@@ -59,16 +59,22 @@ void FImGuiModuleManager::AddNewImGuiWindow(const UWorld& InWorld, const FString
     tabManager->InsertNewDocumentTab(
         TEXT("IMGUIWidget"),
         FTabManager::ESearchPreference::PreferLiveTab,
-        SNew(SDockTab)
+		SNew(SDockTab)
         .Label(NSLOCTEXT("IMGUIWidget", "IMGUIWidget", "IMGUIWidget"))
         .TabRole(ETabRole::DocumentTab)
-        .ShouldAutosize(true)
+        .ShouldAutosize(false)
         [
-            SNew(SImGuiBaseWidget, MoveTemp(InImGuiDrawer), FImGuiThemeStyle{ EIMTheme::Dark, EIMThemeFont::Roboto, 13.0f })
-            .ModuleManager(this)
-            .ContextName(InName)
-            // To correctly clip borders. Using SScissorRectBox in older versions seems to be not necessary.
-            .Clipping(EWidgetClipping::ClipToBounds)
+            SNew(SVerticalBox)
+			+SVerticalBox::Slot()
+			.VAlign(EVerticalAlignment::VAlign_Fill)
+			.HAlign(EHorizontalAlignment::HAlign_Fill)
+			[
+	            SNew(SImGuiBaseWidget, MoveTemp(InImGuiDrawer), FImGuiThemeStyle{ EIMTheme::Dark, EIMThemeFont::Roboto, 13.0f })
+	            .ModuleManager(this)
+	            .ContextName(InName)
+	            // To correctly clip borders. Using SScissorRectBox in older versions seems to be not necessary.
+	            .Clipping(EWidgetClipping::ClipToBounds)
+			]
         ]
     );
 }

@@ -15,6 +15,8 @@
 #include <Framework/Commands/InputChord.h>
 #include <Kismet2/DebuggerCommands.h>
 #endif // WITH_EDITOR
+#include "GameFramework/InputSettings.h"
+#include "Framework/Application/SlateApplication.h"
 
 
 DEFINE_LOG_CATEGORY(LogImGuiInputHandler);

@@ -8,6 +8,8 @@
 #include "Utilities/Arrays.h"
 
 #include <Runtime/Launch/Resources/Version.h>
+#include "Misc/Paths.h"
+#include "GenericPlatform/GenericPlatformFile.h"
 
 
 static constexpr float DEFAULT_CANVAS_WIDTH  = 3840.f;

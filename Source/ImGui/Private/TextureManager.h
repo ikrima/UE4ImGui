@@ -2,10 +2,11 @@
 
 #pragma once
 
-#include <Core.h>
 #include <Styling/SlateBrush.h>
 #include <Textures/SlateShaderResource.h>
 #include "ImGuiInteroperability.h"
+
+class UTexture2D;
 
 
 // Manager for textures resources which can be referenced by a unique name or index.

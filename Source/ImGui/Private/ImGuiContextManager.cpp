@@ -16,6 +16,7 @@
 #include "ImGuiAlFonts/FontAwesome5Solid900.inl"
 #include "Interfaces/IPluginManager.h"
 #include "TextureManager.h"
+#include "Misc/Paths.h"
 
 void FImGuiContextManager::BuildFonts(FTextureManager& TextureManager)
 {    

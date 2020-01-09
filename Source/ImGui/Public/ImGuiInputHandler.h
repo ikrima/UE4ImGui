@@ -5,6 +5,7 @@
 #include <CoreMinimal.h>
 #include <UObject/Object.h>
 #include <UObject/WeakObjectPtr.h>
+#include <Input/Reply.h>
 
 #include "ImGuiInputHandler.generated.h"
 

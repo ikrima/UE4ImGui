@@ -3,6 +3,7 @@
 
 #include "ImGuiDrawData.h"
 #include "UnrealImGui.h"
+#include "Rendering/RenderingCommon.h"
 
 
 #if ENGINE_COMPATIBILITY_LEGACY_CLIPPING_API

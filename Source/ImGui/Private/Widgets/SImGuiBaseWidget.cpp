@@ -18,6 +18,7 @@
 #include <Engine/Console.h>
 
 #include <utility>
+#include "Framework/Application/SlateApplication.h"
 
 
 #if IMGUI_WIDGET_DEBUG

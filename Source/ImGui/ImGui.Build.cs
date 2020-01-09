@@ -16,7 +16,7 @@ public class ImGui : ModuleRules
 
         bEnforceIWYU = true;
 		PCHUsage     = PCHUsageMode.UseExplicitOrSharedPCHs;
-        //bFasterWithoutUnity = true;
+        bFasterWithoutUnity = true;
         bEnforceIWYU = true;
         bLegacyPublicIncludePaths = false;
 

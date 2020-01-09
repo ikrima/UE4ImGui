@@ -6,6 +6,9 @@
 #include "ImGuiModuleSettings.h"
 
 #include <Widgets/SLeafWidget.h>
+#include <Engine/EngineTypes.h>
+#include "Widgets/DeclarativeSyntaxSupport.h"
+#include "Brushes/SlateBorderBrush.h"
 
 
 // Widget that controls transform of ImGui canvas/space.

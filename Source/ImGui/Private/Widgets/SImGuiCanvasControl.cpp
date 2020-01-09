@@ -1,6 +1,9 @@
 // Distributed under the MIT License (MIT) (see accompanying LICENSE file)
 
 #include "SImGuiCanvasControl.h"
+#include "Rendering/DrawElements.h"
+#include "Framework/Application/SlateApplication.h"
+#include "Widgets/SWindow.h"
 
 
 namespace
@@ -51,13 +54,11 @@ namespace
 	};
 }
 
-BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 void SImGuiCanvasControl::Construct(const FArguments& InArgs)
 {
 	OnTransformChanged = InArgs._OnTransformChanged;
 	UpdateVisibility();
 }
-END_SLATE_FUNCTION_BUILD_OPTIMIZATION
 
 void SImGuiCanvasControl::SetActive(bool bInActive)
 {

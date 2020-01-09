@@ -1,10 +1,11 @@
 // Distributed under the MIT License (MIT) (see accompanying LICENSE file)
 
 #pragma once
+#include "Engine/GameInstance.h"
+#include "Engine/GameViewportClient.h"
+#include "Engine/World.h"
 
-#include <Core.h>
-#include <Engine.h>
-
+struct FWorldContext;
 
 // Utilities helping to get a World Context.
 

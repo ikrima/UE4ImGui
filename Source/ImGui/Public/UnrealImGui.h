@@ -3,13 +3,8 @@
 
 // Module-wide macros
 #include <Runtime/Launch/Resources/Version.h>
-#include <Core.h>
-#include <Engine.h>
 #include <Logging/LogMacros.h>
 
-// For backward compatibility we will use FStringClassReference which in newer engine versions is a typedef for
-// FSoftClassPath. Include right soft class reference header to avoid warnings in newer engine version.
-#include <UObject/SoftObjectPath.h>
 #include "imgui.h"
 #include "imgui_node_editor.h"
 struct ImGuiContext;

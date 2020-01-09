@@ -5,6 +5,8 @@
 #include "UnrealImGui.h"
 
 #include <algorithm>
+#include "Framework/Application/SlateApplication.h"
+#include "Engine/Texture2D.h"
 
 
 void FTextureManager::InitializeErrorTexture(const FColor& Color)

@@ -16,6 +16,7 @@
 #include "LevelEditor.h"
 #endif
 #include "Widgets/SImGuiBaseWidget.h"
+#include "Framework/Application/SlateApplication.h"
 
 
 // High enough z-order guarantees that ImGui output is rendered on top of the game UI.

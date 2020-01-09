@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Utilities/WorldContext.h"
+#include "Engine/Engine.h"
 
 
 // Utilities mapping worlds to indices that we use to identify ImGui contexts.

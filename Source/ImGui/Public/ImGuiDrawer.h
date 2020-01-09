@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include <Core.h>
-
 struct IMGUI_API FImGuiDrawer
 {
 protected:

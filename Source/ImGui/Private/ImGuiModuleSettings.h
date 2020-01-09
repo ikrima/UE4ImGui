@@ -4,7 +4,9 @@
 
 #include <Delegates/Delegate.h>
 #include <UObject/Object.h>
-#include "Engine/DeveloperSettings.h"
+#include <Engine/DeveloperSettings.h>
+#include <InputCoreTypes.h>
+#include <Styling/SlateTypes.h>
 
 #include "ImGuiModuleSettings.generated.h"
 

@@ -1,6 +1,8 @@
 // Distributed under the MIT License (MIT) (see accompanying LICENSE file)
 
 #include "WorldContext.h"
+#include <Engine/Engine.h>
+#include <Engine/EngineBaseTypes.h>
 
 
 namespace Utilities

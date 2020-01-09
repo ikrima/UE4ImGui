@@ -5,9 +5,11 @@
 #include "ImGuiInteroperability.h"
 
 #include <Runtime/Launch/Resources/Version.h>
-#include <SlateCore.h>
 
 #include "UnrealImGui.h"
+#include "Rendering/RenderingCommon.h"
+
+struct FSlateVertex;
 
 
 // ImGui draw command data transformed for Slate.

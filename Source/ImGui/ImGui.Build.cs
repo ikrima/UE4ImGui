@@ -34,7 +34,8 @@ public class ImGui : ModuleRules
                 Path.Combine(ModuleDirectory, "ThirdParty/ImGuiAlFonts/Public"),
                 Path.Combine(ModuleDirectory, "ThirdParty/ImGuiNodeEditor/Include"),
                 Path.Combine(ModuleDirectory, "ThirdParty/NelariusImNodes/Public"),
-            }
+				Path.Combine(ModuleDirectory, "ThirdParty/ImGuiColorTextEdit/Public"),
+			}
 			);
 
 
@@ -48,7 +49,8 @@ public class ImGui : ModuleRules
 				// ... add other private include paths required here ...
                 "ImGui/ThirdParty/ImGuiNodeEditor/Private",
                 "ImGui/ThirdParty/NelariusImNodes/Private",
-            }
+				"ImGui/ThirdParty/ImGuiColorTextEdit/Private",
+			}
 			);
 
 

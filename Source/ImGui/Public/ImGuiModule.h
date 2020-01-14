@@ -21,7 +21,7 @@ public:
 	 */
 	static inline FImGuiModule& Get()
 	{
-		return FModuleManager::LoadModuleChecked<FImGuiModule>("ImGui");
+		return FModuleManager::GetModuleChecked<FImGuiModule>("ImGui");
 	}
 
 	/**

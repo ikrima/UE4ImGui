@@ -119,6 +119,7 @@ void FImGuiContextProxy::Tick(float DeltaSeconds, const FVector2D& InDisplaySize
 
     // Tick Drawer 
 	{
+		DrawerObj->OnTick(DeltaSeconds);
 		ThemeStyle.OnBegin();
 		DrawerObj->OnDraw();
 		ThemeStyle.OnEnd();

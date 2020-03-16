@@ -6,8 +6,9 @@ struct IMGUI_API FImGuiDrawer
 {
 protected:
     virtual void OnInitialize() {}
-    virtual void OnDestroy() {}
+    virtual void OnTick(const float InDeltaTime) {}
     virtual void OnDraw() = 0;
+    virtual void OnDestroy() {}
 
 public:
     virtual ~FImGuiDrawer() = default;

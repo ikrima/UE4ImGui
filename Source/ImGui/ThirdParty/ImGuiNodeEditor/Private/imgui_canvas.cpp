@@ -1,7 +1,6 @@
 ﻿# define IMGUI_DEFINE_MATH_OPERATORS
 # include "imgui_canvas.h"
 # include <type_traits>
-#include "imgui_node_editor_internal.h"
 
 // https://stackoverflow.com/a/36079786
 # define DECLARE_HAS_MEMBER(__trait_name__, __member_name__)                         \
@@ -49,6 +48,15 @@ struct FringeScaleRef
 };
 
 } // namespace ImCanvasDetails
+
+// Returns a reference to _FringeScale extension to ImDrawList
+//
+// If ImDrawList does not have _FringeScale a placeholder is returned.
+static inline float& ImFringeScaleRef(ImDrawList* drawList)
+{
+    using namespace ImCanvasDetails;
+    return FringeScaleRef::Get<ImDrawList>(drawList);
+}
 
 static inline ImVec2 ImSelectPositive(const ImVec2& lhs, const ImVec2& rhs) { return ImVec2(lhs.x > 0.0f ? lhs.x : rhs.x, lhs.y > 0.0f ? lhs.y : rhs.y); }
 
@@ -366,9 +374,9 @@ void ImGuiEx::Canvas::EnterLocalSpace()
     for (auto i = 0; i < IM_ARRAYSIZE(m_MouseClickedPosBackup); ++i)
         io.MouseClickedPos[i] = (m_MouseClickedPosBackup[i] - m_ViewTransformPosition) * m_View.InvScale;
 
-    m_ViewRect = CalcViewRect(m_View);
+    m_ViewRect = CalcViewRect(m_View);;
 
-    auto& fringeScale = ax::NodeEditor::Detail::ImFringeScaleRef(m_DrawList);
+    auto& fringeScale = ImFringeScaleRef(m_DrawList);
     m_LastFringeScale = fringeScale;
     fringeScale *= m_View.InvScale;
 }
@@ -434,7 +442,7 @@ void ImGuiEx::Canvas::LeaveLocalSpace()
         }
     }
 
-    auto& fringeScale = ax::NodeEditor::Detail::ImFringeScaleRef(m_DrawList);
+    auto& fringeScale = ImFringeScaleRef(m_DrawList);
     fringeScale = m_LastFringeScale;
 
     // And pop \o/
@@ -442,5 +450,3 @@ void ImGuiEx::Canvas::LeaveLocalSpace()
 
     RestoreInputState();
 }
-
-#undef IMGUI_DEFINE_MATH_OPERATORS

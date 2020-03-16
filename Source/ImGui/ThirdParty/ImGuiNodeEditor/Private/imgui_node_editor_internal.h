@@ -102,9 +102,6 @@ struct FringeScaleRef
     }
 };
 
-// Returns a reference to _FringeScale extension to ImDrawList
-//
-// If ImDrawList does not have _FringeScale a placeholder is returned.
 static inline float& ImFringeScaleRef(ImDrawList* drawList)
 {
     return FringeScaleRef::Get<ImDrawList>(drawList);
@@ -1466,6 +1463,6 @@ private:
 //------------------------------------------------------------------------------
 # include "imgui_node_editor_internal.inl"
 
-#undef IMGUI_DEFINE_MATH_OPERATORS
+
 //------------------------------------------------------------------------------
 # endif // __IMGUI_NODE_EDITOR_INTERNAL_H__

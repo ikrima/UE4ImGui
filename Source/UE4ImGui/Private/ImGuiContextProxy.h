@@ -79,6 +79,9 @@ private:
 
 	uint32 LastFrameNumber = 0;
 
+	bool bShowAppMetrics = false;
+	bool bShowDemoWindow = false;
+
 	std::string IniFilename;
     TUniquePtr<FImGuiDrawer> DrawerObj;
     FImGuiThemeStyle ThemeStyle = { EIMTheme::Dark, EIMThemeFont::Roboto, 16.0f };

@@ -6,6 +6,7 @@ using UnrealBuildTool;
 
 public class ImGui : ModuleRules
 {
+	const bool bUseFreetype = false;
 	public ImGui(ReadOnlyTargetRules Target) : base(Target)
 	{
 		bool bBuildEditor = Target.bBuildEditor;
@@ -27,7 +28,6 @@ public class ImGui : ModuleRules
                 Path.Combine(ModuleDirectory, "Public"),
                 Path.Combine(ModuleDirectory, "ThirdParty/ImGuiLibrary/Include"),
 				Path.Combine(ModuleDirectory, "ThirdParty/ImGuiLibrary/Include/misc/cpp"),
-                Path.Combine(ModuleDirectory, "ThirdParty/ImGuiLibrary/Include/misc/fonts"),
                 Path.Combine(ModuleDirectory, "ThirdParty/ImGuiLibrary/Include/misc/freetype"),
                 Path.Combine(ModuleDirectory, "ThirdParty/IconFontCppHeaders/Public"),
                 Path.Combine(ModuleDirectory, "ThirdParty/ImGuiAlFonts/Public"),
@@ -41,13 +41,12 @@ public class ImGui : ModuleRules
 		PrivateIncludePaths.AddRange(
 			new string[] {
 				Path.Combine(ModuleDirectory, "Private"),
-				Path.Combine(ModuleDirectory, "ThirdParty/ImGuiLibrary/Private"),
                 Path.Combine(ModuleDirectory, "ThirdParty/ImGuiLibrary/Private/misc/cpp"),
-                Path.Combine(ModuleDirectory, "ThirdParty/ImGuiLibrary/Private/misc/fonts"),
+				Path.Combine(ModuleDirectory, "ThirdParty/ImGuiLibrary/Private"),
 				Path.Combine(ModuleDirectory, "ThirdParty/ImGuiLibrary/Private/misc/freetype"),
-                Path.Combine(ModuleDirectory, "ImGui/ThirdParty/ImGuiNodeEditor/Private"),
-                Path.Combine(ModuleDirectory, "ImGui/ThirdParty/NelariusImNodes/Private"),
-				Path.Combine(ModuleDirectory, "ImGui/ThirdParty/ImGuiColorTextEdit/Private"),
+                Path.Combine(ModuleDirectory, "ThirdParty/ImGuiNodeEditor/Private"),
+                Path.Combine(ModuleDirectory, "ThirdParty/NelariusImNodes/Private"),
+				Path.Combine(ModuleDirectory, "ThirdParty/ImGuiColorTextEdit/Private"),
 			}
 			);
 
@@ -89,7 +88,16 @@ public class ImGui : ModuleRules
 				);
 		}
 
-
+		if (bUseFreetype)
+		{
+			AddEngineThirdPartyPrivateStaticDependencies(Target, "FreeType2");
+			PublicDefinitions.Add("WITH_IMGUI_FREETYPE=1");
+		}
+		else
+		{
+			PublicDefinitions.Add("WITH_IMGUI_FREETYPE=0");
+		}
+			
 		DynamicallyLoadedModuleNames.AddRange(
 			new string[]
 			{

@@ -1,6 +1,7 @@
 // Distributed under the MIT License (MIT) (see accompanying LICENSE file)
 
 #include "UnrealImGui.h"
+#if 0
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui_internal.h"
 
@@ -21,11 +22,13 @@
 #include <Windows/AllowWindowsPlatformTypes.h>
 #endif // PLATFORM_WINDOWS
 
+//THIRD_PARTY_INCLUDES_START
 #include "imgui.cpp"
 #include "imgui_demo.cpp"
 #include "imgui_draw.cpp"
 #include "imgui_widgets.cpp"
 #include "misc/cpp/imgui_stdlib.cpp"
+//THIRD_PARTY_INCLUDES_END 
 
 #if PLATFORM_WINDOWS
 #include <Windows/HideWindowsPlatformTypes.h>
@@ -35,3 +38,4 @@
 
 
 #undef IMGUI_DEFINE_MATH_OPERATORS
+#endif

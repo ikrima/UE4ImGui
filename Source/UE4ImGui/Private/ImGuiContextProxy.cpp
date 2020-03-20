@@ -10,6 +10,7 @@
 #include <Runtime/Launch/Resources/Version.h>
 #include "Misc/Paths.h"
 #include "GenericPlatform/GenericPlatformFile.h"
+#include "ImGuiModule.h"
 
 
 static constexpr float DEFAULT_CANVAS_WIDTH  = 3840.f;
@@ -26,7 +27,7 @@ namespace
 		const FString SavedDir = FPaths::ProjectSavedDir();
 #endif
 
-		FString Directory = FPaths::Combine(*SavedDir, TEXT("ImGui"));
+		FString Directory = FPaths::Combine(*SavedDir, FImGuiModule::ModuleName);
 
 		// Make sure that directory is created.
 		IPlatformFile::GetPlatformPhysical().CreateDirectory(*Directory);

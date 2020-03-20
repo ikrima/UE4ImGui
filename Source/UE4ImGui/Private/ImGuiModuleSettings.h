@@ -7,6 +7,7 @@
 #include <Engine/DeveloperSettings.h>
 #include <InputCoreTypes.h>
 #include <Styling/SlateTypes.h>
+#include "ImGuiModule.h"
 
 #include "ImGuiModuleSettings.generated.h"
 
@@ -62,7 +63,7 @@ public:
 
 #if WITH_EDITOR
     /** Gets the section text, uses the classes DisplayName by default. */
-    virtual FText GetSectionText() const override { return NSLOCTEXT("ImGui", "ImGui", "ImGui"); }
+    virtual FText GetSectionText() const override { return FText::FromString(FImGuiModule::PluginName); }
 #endif
     virtual FName GetContainerName() const override
     {

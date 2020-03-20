@@ -17,7 +17,7 @@ FSimpleMulticastDelegate UImGuiSettings::OnSettingsLoaded;
 UImGuiSettings::UImGuiSettings()
 {
     CategoryName = TEXT("Plugins");
-    SectionName = TEXT("ImGui");
+    SectionName = FImGuiModule::PluginName;
 }
 
 void UImGuiSettings::PostInitProperties()

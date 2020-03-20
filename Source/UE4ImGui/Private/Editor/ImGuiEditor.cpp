@@ -15,8 +15,6 @@
 
 #define LOCTEXT_NAMESPACE "ImGuiEditor"
 
-#define SETTINGS_CONTAINER TEXT("Project"), TEXT("Plugins"), TEXT("ImGui")
-
 
 namespace
 {
@@ -104,7 +102,6 @@ void FImGuiEditor::ReleaseRegistrator()
 }
 
 
-#undef SETTINGS_CONTAINER
 #undef LOCTEXT_NAMESPACE
 
 #endif // WITH_EDITOR

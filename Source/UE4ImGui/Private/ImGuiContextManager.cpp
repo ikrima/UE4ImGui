@@ -17,6 +17,7 @@
 #include "Interfaces/IPluginManager.h"
 #include "TextureManager.h"
 #include "Misc/Paths.h"
+#include "ImGuiModule.h"
 
 void FImGuiContextManager::BuildFonts(FTextureManager& TextureManager)
 {    
@@ -48,10 +49,7 @@ void FImGuiContextManager::BuildFonts(FTextureManager& TextureManager)
     icons_config.OversampleH = icons_config.OversampleV = 1;
     icons_config.PixelSnapH = true;
 
-    //FString robotoFontPath = FPaths::ConvertRelativePathToFull(FPaths::Combine(FPaths::ProjectContentDir(), TEXT("")));
-    const FString imguiPluginBaseDir = IPluginManager::Get().FindPlugin("ImGui").IsValid() ? IPluginManager::Get().FindPlugin("ImGui")->GetBaseDir() : "";
-    const FString imguiBaseDir = FPaths::ConvertRelativePathToFull(imguiPluginBaseDir / TEXT("Source") / TEXT("ThirdParty") / TEXT("ImGuiLibrary"));
-    const FString robotoFontPath = FPaths::ConvertRelativePathToFull(imguiBaseDir / TEXT("Include") / TEXT("misc") / TEXT("fonts") / TEXT("Roboto-Medium.ttf"));
+    const FString robotoFontPath = FPaths::ConvertRelativePathToFull(FImGuiModule::GetImGuiFontDir() / TEXT("Roboto-Medium.ttf"));
     themeFonts[uint8(EIMThemeFont::Default)] = FontAtlas.AddFontDefault();
     themeFonts[uint8(EIMThemeFont::Roboto)] = FontAtlas.AddFontFromFileTTF(StringCast<ANSICHAR>(*robotoFontPath).Get(), fontSize, &icons_config);
     addIconFont();

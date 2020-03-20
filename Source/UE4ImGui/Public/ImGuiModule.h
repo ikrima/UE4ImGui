@@ -7,11 +7,15 @@
 #include "Templates/UniquePtr.h"
 #include <Modules/ModuleManager.h>
 #include "ImGuiDrawer.h"
+#include "Misc/Paths.h"
+#include "Interfaces/IPluginManager.h"
 
 
 class FImGuiModule : public IModuleInterface
 {
 public:
+	static constexpr inline TCHAR* PluginName = TEXT("UE4ImGui");
+	static constexpr inline TCHAR* ModuleName = TEXT("UE4ImGui");
 
 	/**
 	 * Singleton-like access to this module's interface. This is just for convenience!
@@ -21,9 +25,21 @@ public:
 	 */
 	static inline FImGuiModule& Get()
 	{
-		return FModuleManager::GetModuleChecked<FImGuiModule>("ImGui");
+		return FModuleManager::GetModuleChecked<FImGuiModule>(FImGuiModule::ModuleName);
 	}
 
+	static inline FString GetPluginBaseDir()
+	{
+		return IPluginManager::Get().FindPlugin(FImGuiModule::PluginName).IsValid() ? IPluginManager::Get().FindPlugin(FImGuiModule::PluginName)->GetBaseDir() : "";
+	}
+	static inline FString GetImGuiLibDir()
+	{
+		return FPaths::ConvertRelativePathToFull(GetPluginBaseDir() / TEXT("Source") / FImGuiModule::ModuleName / TEXT("ThirdParty") / TEXT("ImGui"));
+	}
+	static inline FString GetImGuiFontDir()
+	{
+		return FPaths::ConvertRelativePathToFull(GetImGuiLibDir() / TEXT("misc") / TEXT("fonts"));
+	}
 	/**
 	 * Checks to see if this module is loaded and ready. It is only valid to call Get() if IsAvailable() returns true.
 	 *
@@ -31,7 +47,7 @@ public:
 	 */
 	static inline bool IsAvailable()
 	{
-		return FModuleManager::Get().IsModuleLoaded("ImGui");
+		return FModuleManager::Get().IsModuleLoaded(FImGuiModule::ModuleName);
 	}
 
     IMGUI_API virtual void AddNewImGuiWindow(const UWorld& InWorld, const FString& InName, TUniquePtr<FImGuiDrawer> InImGuiDrawer);

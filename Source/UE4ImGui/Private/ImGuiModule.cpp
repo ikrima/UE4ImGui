@@ -202,7 +202,7 @@ class FImGuiModuleLoader
 	static FImGuiModuleLoader Instance;
 };
 
-FName FImGuiModuleLoader::ModuleName = "ImGui";
+FName FImGuiModuleLoader::ModuleName = FImGuiModule::ModuleName;
 
 // In monolithic builds this will start loading process.
 FImGuiModuleLoader FImGuiModuleLoader::Instance;
@@ -223,4 +223,4 @@ bool FImGuiTextureHandle::HasValidEntry() const
 
 #undef LOCTEXT_NAMESPACE
 
-IMPLEMENT_MODULE(FImGuiModule, ImGui)
+IMPLEMENT_MODULE(FImGuiModule, UE4ImGui)

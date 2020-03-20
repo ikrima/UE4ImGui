@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.IO;
 using UnrealBuildTool;
 
-public class ImGui : ModuleRules
+public class UE4ImGui : ModuleRules
 {
     const bool bUseFreetype = false;
-    public ImGui(ReadOnlyTargetRules Target) : base(Target)
+    public UE4ImGui(ReadOnlyTargetRules Target) : base(Target)
     {
         bool bBuildEditor = Target.bBuildEditor;
 

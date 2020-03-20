@@ -4,7 +4,7 @@
 
 
 /** Properties that define state of the ImGui module. */
-class IMGUI_API FImGuiModuleProperties
+class FImGuiModuleProperties
 {
 public:
 

@@ -81,6 +81,7 @@ private:
 
 	bool bShowAppMetrics = false;
 	bool bShowDemoWindow = false;
+	ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_None;
 
 	std::string IniFilename;
     TUniquePtr<FImGuiDrawer> DrawerObj;

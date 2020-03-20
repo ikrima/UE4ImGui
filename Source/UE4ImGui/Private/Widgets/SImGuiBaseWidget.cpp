@@ -105,7 +105,7 @@ void SImGuiBaseWidget::Tick(const FGeometry& AllottedGeometry, const double InCu
     
     // Manually update ImGui context to minimise lag between creating and rendering ImGui output. This will also
 	// keep frame tearing at minimum because it is executed at the very end of the frame.
-	ContextProxy->Tick(FSlateApplication::Get().GetDeltaTime(), AllottedGeometry.GetAbsoluteSize());
+	ContextProxy->Tick(InDeltaTime, AllottedGeometry.GetAbsoluteSize());
     if constexpr (IMGUI_WIDGET_DEBUG)
     {
         OnDebugDraw();

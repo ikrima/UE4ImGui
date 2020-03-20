@@ -2,7 +2,7 @@
 
 #pragma once
 
-struct IMGUI_API FImGuiDrawer
+struct UE4IMGUI_API FImGuiDrawer
 {
 protected:
     virtual void OnInitialize() {}

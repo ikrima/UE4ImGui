@@ -6,17 +6,17 @@ using UnrealBuildTool;
 
 public class ImGui : ModuleRules
 {
-	const bool bUseFreetype = false;
-	public ImGui(ReadOnlyTargetRules Target) : base(Target)
-	{
-		bool bBuildEditor = Target.bBuildEditor;
+    const bool bUseFreetype = false;
+    public ImGui(ReadOnlyTargetRules Target) : base(Target)
+    {
+        bool bBuildEditor = Target.bBuildEditor;
 
-		// Developer modules are automatically loaded only in editor builds but can be stripped out from other builds.
-		// Enable runtime loader, if you want this module to be automatically loaded in runtime builds (monolithic).
-		bool bEnableRuntimeLoader = true;
+        // Developer modules are automatically loaded only in editor builds but can be stripped out from other builds.
+        // Enable runtime loader, if you want this module to be automatically loaded in runtime builds (monolithic).
+        bool bEnableRuntimeLoader = true;
 
         bEnforceIWYU = true;
-		PCHUsage     = PCHUsageMode.UseExplicitOrSharedPCHs;
+        PCHUsage     = PCHUsageMode.UseExplicitOrSharedPCHs;
         bFasterWithoutUnity = true;
         bEnforceIWYU = true;
         bLegacyPublicIncludePaths = false;
@@ -24,87 +24,82 @@ public class ImGui : ModuleRules
         PrivatePCHHeaderFile = "Private/ImGuiPrivatePCH.h";
 
         PublicIncludePaths.AddRange(
-			new string[] {
+            new string[] {
                 Path.Combine(ModuleDirectory, "Public"),
-                Path.Combine(ModuleDirectory, "ThirdParty/ImGuiLibrary/Include"),
-				Path.Combine(ModuleDirectory, "ThirdParty/ImGuiLibrary/Include/misc/cpp"),
-                Path.Combine(ModuleDirectory, "ThirdParty/ImGuiLibrary/Include/misc/freetype"),
-                Path.Combine(ModuleDirectory, "ThirdParty/IconFontCppHeaders/Public"),
-                Path.Combine(ModuleDirectory, "ThirdParty/ImGuiAlFonts/Public"),
-                Path.Combine(ModuleDirectory, "ThirdParty/ImGuiNodeEditor/Include"),
-                Path.Combine(ModuleDirectory, "ThirdParty/NelariusImNodes/Public"),
-				Path.Combine(ModuleDirectory, "ThirdParty/ImGuiColorTextEdit/Public"),
-			}
-			);
-
-
-		PrivateIncludePaths.AddRange(
-			new string[] {
-				Path.Combine(ModuleDirectory, "Private"),
-                Path.Combine(ModuleDirectory, "ThirdParty/ImGuiLibrary/Private/misc/cpp"),
-				Path.Combine(ModuleDirectory, "ThirdParty/ImGuiLibrary/Private"),
-				Path.Combine(ModuleDirectory, "ThirdParty/ImGuiLibrary/Private/misc/freetype"),
-                Path.Combine(ModuleDirectory, "ThirdParty/ImGuiNodeEditor/Private"),
-                Path.Combine(ModuleDirectory, "ThirdParty/NelariusImNodes/Private"),
-				Path.Combine(ModuleDirectory, "ThirdParty/ImGuiColorTextEdit/Private"),
-			}
-			);
-
-
-		PublicDependencyModuleNames.AddRange(
-			new string[]
-			{
-				"Core",
-				"Projects"
-				// ... add other public dependencies that you statically link with here ...
+                Path.Combine(ModuleDirectory, "ThirdParty/ImGui"),
+                Path.Combine(ModuleDirectory, "ThirdParty/ImGuiUX"),
+                Path.Combine(ModuleDirectory, "ThirdParty/ImGuiUX/IconFontCppHeaders"),
+                Path.Combine(ModuleDirectory, "ThirdParty/ImGuiUX/ImGuiAl"),
+                Path.Combine(ModuleDirectory, "ThirdParty/ImGuiUX/ImGuiColorTextEdit"),
+                Path.Combine(ModuleDirectory, "ThirdParty/ImGuiUX/Nelarius_ImNodes"),
+                Path.Combine(ModuleDirectory, "ThirdParty/ImGuiUX/Dmd_NodeEditor/NodeEditor/Include"),
             }
-			);
+            );
 
 
-		PrivateDependencyModuleNames.AddRange(
-			new string[]
-			{
-				"CoreUObject",
-				"Engine",
-				"InputCore",
-				"Slate",
-				"SlateCore",
-				// ... add private dependencies that you statically link with here ...	
+        PrivateIncludePaths.AddRange(
+            new string[] {
+                Path.Combine(ModuleDirectory, "Private"),
+                Path.Combine(ModuleDirectory, "ThirdParty/ImGui"),
+                Path.Combine(ModuleDirectory, "ThirdParty/ImGuiUX/misc/cpp"),
+            }
+            );
+
+
+        PublicDependencyModuleNames.AddRange(
+            new string[]
+            {
+                "Core",
+                "Projects"
+                // ... add other public dependencies that you statically link with here ...
+            }
+            );
+
+
+        PrivateDependencyModuleNames.AddRange(
+            new string[]
+            {
+                "CoreUObject",
+                "Engine",
+                "InputCore",
+                "Slate",
+                "SlateCore",
+                // ... add private dependencies that you statically link with here ...	
                 
                 "Projects",
             }
-			);
+            );
 
 
-		if (bBuildEditor)
-		{
-			PrivateDependencyModuleNames.AddRange(
-				new string[]
-				{
-					"EditorStyle",
-					"Settings",
-					"UnrealEd",
-				}
-				);
-		}
+        if (bBuildEditor)
+        {
+            PrivateDependencyModuleNames.AddRange(
+                new string[]
+                {
+                    "EditorStyle",
+                    "Settings",
+                    "UnrealEd",
+                }
+                );
+        }
 
-		if (bUseFreetype)
-		{
-			AddEngineThirdPartyPrivateStaticDependencies(Target, "FreeType2");
-			PublicDefinitions.Add("WITH_IMGUI_FREETYPE=1");
-		}
-		else
-		{
-			PublicDefinitions.Add("WITH_IMGUI_FREETYPE=0");
-		}
-			
-		DynamicallyLoadedModuleNames.AddRange(
-			new string[]
-			{
-				// ... add any modules that your module loads dynamically here ...
-			}
-			);
+        if (bUseFreetype)
+        {
+            AddEngineThirdPartyPrivateStaticDependencies(Target, "FreeType2");
+            PublicDefinitions.Add("WITH_IMGUI_FREETYPE=1");
+        }
+        else
+        {
+            PublicDefinitions.Add("WITH_IMGUI_FREETYPE=0");
+        }
+            
+        DynamicallyLoadedModuleNames.AddRange(
+            new string[]
+            {
+                // ... add any modules that your module loads dynamically here ...
+            }
+            );
 
-		PrivateDefinitions.Add(string.Format("RUNTIME_LOADER_ENABLED={0}", bEnableRuntimeLoader ? 1 : 0));
-	}
+        PrivateDefinitions.Add(string.Format("RUNTIME_LOADER_ENABLED={0}", bEnableRuntimeLoader ? 1 : 0));
+    }
 }

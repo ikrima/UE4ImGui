@@ -1,6 +1,7 @@
 #include "ImGuiTheming.h"
 #include "Containers/StringConv.h"
 #include "Interfaces/IPluginManager.h"
+#include "UnrealImGui.h"
 
 void FImGuiThemeStyle::SetTheme(EIMTheme InTheme)
 {
@@ -52,7 +53,7 @@ void FImGuiThemeStyle::SetTheme(EIMTheme InTheme)
 		colours[ImGuiCol_TabActive]             = ImVec4(0.28f, 0.28f, 0.28f, 1.00f);
 		colours[ImGuiCol_TabUnfocused]          = ImVec4(0.17f, 0.17f, 0.17f, 1.00f);
 		colours[ImGuiCol_TabUnfocusedActive]    = ImVec4(0.26f, 0.26f, 0.26f, 1.00f);
-        #ifdef IMGUI_HAS_DOCK 
+        #if IMGUI_HAS_DOCK 
 		colours[ImGuiCol_DockingPreview]        = ImVec4(0.55f, 0.55f, 0.55f, 1.00f);
 		colours[ImGuiCol_DockingEmptyBg]        = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
         #endif
@@ -118,7 +119,7 @@ void FImGuiThemeStyle::SetTheme(EIMTheme InTheme)
 		colours[ImGuiCol_NavWindowingDimBg]     = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
 		colours[ImGuiCol_ModalWindowDimBg]      = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 
-#ifdef IMGUI_HAS_DOCK
+#if IMGUI_HAS_DOCK
         colours[ImGuiCol_TabActive]             = colours[ImGuiCol_ChildBg];
         //colours[ImGuiCol_TabHovered]
 		//colours[ImGuiCol_DockingEmptyBg]      = ImVec4(0.33f, 0.33f, 0.33f, 1.00f);
@@ -176,7 +177,7 @@ void FImGuiThemeStyle::SetTheme(EIMTheme InTheme)
 		colours[ImGuiCol_NavWindowingHighlight] = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
 		colours[ImGuiCol_NavWindowingDimBg]     = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
 
-#ifdef IMGUI_HAS_DOCK 
+#if IMGUI_HAS_DOCK 
 		colours[ImGuiCol_DockingEmptyBg]        = ImVec4(0.38f, 0.38f, 0.38f, 1.00f);
 		colours[ImGuiCol_Tab]                   = ImVec4(0.25f, 0.25f, 0.25f, 1.00f);
 		colours[ImGuiCol_TabHovered]            = ImVec4(0.40f, 0.40f, 0.40f, 1.00f);
@@ -330,7 +331,7 @@ void FImGuiThemeStyle::SetTheme(EIMTheme InTheme)
 
 
         
-#ifdef IMGUI_HAS_DOCK
+#if IMGUI_HAS_DOCK
     colours[ImGuiCol_TabActive]    = colours[ImGuiCol_ChildBg];
 	colours[ImGuiCol_TabUnfocused] = colours[ImGuiCol_WindowBg];
 #endif
@@ -342,11 +343,15 @@ void FImGuiThemeStyle::OnInit(ImFontAtlas& InFontAtlas)
 	ImGuiIO& io = ImGui::GetIO();
     fontAtlas = &InFontAtlas;
 	//io.DisplaySize = ImVec2(static_cast<float>(app->GetWindow()->GetWidth()), static_cast<float>(app->GetWindow()->GetHeight()));
-#ifdef IMGUI_HAS_DOCK
+
+#if IMGUI_HAS_DOCK
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-    io.ConfigDockingWithShift = true;
+    io.ConfigDockingWithShift = false;
 #endif
+#if IMGUI_HAS_VIEWPORT
+    //io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+#endif
+
     io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
 	io.ConfigWindowsMoveFromTitleBarOnly = true;
 
@@ -396,10 +401,12 @@ void FImGuiThemeStyle::SetImGuiStyle()
 	style.GrabRounding      = 1;
     style.WindowMinSize     = ImVec2(10.0f,10.0f);
 
-#ifdef IMGUI_HAS_DOCK 
+#if IMGUI_HAS_DOCK 
 	style.TabBorderSize = 0.0f;
 	style.TabRounding = 1;
+#endif
 
+#if IMGUI_HAS_VIEWPORT
 	if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
 		style.WindowRounding = 0.0f;

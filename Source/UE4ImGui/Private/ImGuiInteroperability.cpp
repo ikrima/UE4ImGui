@@ -317,11 +317,6 @@ namespace ImGuiInterops
 		SetFlag(IO.ConfigFlags, ImGuiConfigFlags_NavEnableGamepad, InputState.IsGamepadNavigationEnabled());
 		SetFlag(IO.BackendFlags, ImGuiBackendFlags_HasGamepad, InputState.HasGamepad());
 
-#ifdef IMGUI_HAS_DOCK
-        SetFlag(IO.ConfigFlags, ImGuiConfigFlags_DockingEnable, true);
-        SetFlag(IO.ConfigFlags, ImGuiConfigFlags_ViewportsEnable, true);
-#endif
-
 		// Check whether we need to draw cursor.
 		IO.MouseDrawCursor = InputState.HasMousePointer();
 

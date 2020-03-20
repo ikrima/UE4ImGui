@@ -138,7 +138,7 @@ void FImGuiContextProxy::Tick(float DeltaSeconds, const FVector2D& InDisplaySize
 	    // next frame.
 	    UpdateDrawData(ImGui::GetDrawData());
 
-    #ifdef IMGUI_HAS_DOCK
+    #if IMGUI_HAS_VIEWPORT
 	    // Update and Render additional Platform Windows
 	    if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	    {

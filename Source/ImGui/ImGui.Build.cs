@@ -41,7 +41,7 @@ public class ImGui : ModuleRules
             new string[] {
                 Path.Combine(ModuleDirectory, "Private"),
                 Path.Combine(ModuleDirectory, "ThirdParty/ImGui"),
-                Path.Combine(ModuleDirectory, "ThirdParty/ImGuiUX/misc/cpp"),
+                Path.Combine(ModuleDirectory, "ThirdParty/ImGui/misc/cpp"),
             }
             );
 

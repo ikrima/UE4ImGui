@@ -1,8 +1,8 @@
 {
 	"FileVersion": 3,
 	"Version": 1,
-	"VersionName": "1.16",
-	"FriendlyName": "ImGui",
+	"VersionName": "1.18",
+	"FriendlyName": "UE4ImGui",
 	"Description": "",
 	"Category": "Debug",
 	"CreatedBy": "",

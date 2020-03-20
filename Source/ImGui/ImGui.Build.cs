@@ -25,11 +25,10 @@ public class ImGui : ModuleRules
         PublicIncludePaths.AddRange(
 			new string[] {
                 Path.Combine(ModuleDirectory, "Public"),
-                Path.Combine(ModuleDirectory, "../ThirdParty/ImGuiLibrary/Include"),
-				Path.Combine(ModuleDirectory, "../ThirdParty/ImGuiLibrary/Include/misc/cpp"),
-                Path.Combine(ModuleDirectory, "../ThirdParty/ImGuiLibrary/Include/misc/fonts"),
-                Path.Combine(ModuleDirectory, "../ThirdParty/ImGuiLibrary/Include/misc/freetype"),
-				// ... add public include paths required here ...
+                Path.Combine(ModuleDirectory, "ThirdParty/ImGuiLibrary/Include"),
+				Path.Combine(ModuleDirectory, "ThirdParty/ImGuiLibrary/Include/misc/cpp"),
+                Path.Combine(ModuleDirectory, "ThirdParty/ImGuiLibrary/Include/misc/fonts"),
+                Path.Combine(ModuleDirectory, "ThirdParty/ImGuiLibrary/Include/misc/freetype"),
                 Path.Combine(ModuleDirectory, "ThirdParty/IconFontCppHeaders/Public"),
                 Path.Combine(ModuleDirectory, "ThirdParty/ImGuiAlFonts/Public"),
                 Path.Combine(ModuleDirectory, "ThirdParty/ImGuiNodeEditor/Include"),
@@ -41,15 +40,14 @@ public class ImGui : ModuleRules
 
 		PrivateIncludePaths.AddRange(
 			new string[] {
-				"ImGui/Private",
-				"ThirdParty/ImGuiLibrary/Private",
-                "ThirdParty/ImGuiLibrary/Private/misc/cpp",
-                "ThirdParty/ImGuiLibrary/Private/misc/fonts",
-                "ThirdParty/ImGuiLibrary/Private/misc/freetype",
-				// ... add other private include paths required here ...
-                "ImGui/ThirdParty/ImGuiNodeEditor/Private",
-                "ImGui/ThirdParty/NelariusImNodes/Private",
-				"ImGui/ThirdParty/ImGuiColorTextEdit/Private",
+				Path.Combine(ModuleDirectory, "Private"),
+				Path.Combine(ModuleDirectory, "ThirdParty/ImGuiLibrary/Private"),
+                Path.Combine(ModuleDirectory, "ThirdParty/ImGuiLibrary/Private/misc/cpp"),
+                Path.Combine(ModuleDirectory, "ThirdParty/ImGuiLibrary/Private/misc/fonts"),
+				Path.Combine(ModuleDirectory, "ThirdParty/ImGuiLibrary/Private/misc/freetype"),
+                Path.Combine(ModuleDirectory, "ImGui/ThirdParty/ImGuiNodeEditor/Private"),
+                Path.Combine(ModuleDirectory, "ImGui/ThirdParty/NelariusImNodes/Private"),
+				Path.Combine(ModuleDirectory, "ImGui/ThirdParty/ImGuiColorTextEdit/Private"),
 			}
 			);
 

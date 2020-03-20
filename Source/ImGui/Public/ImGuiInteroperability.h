@@ -28,9 +28,6 @@ namespace ImGuiInterops
 		using FKeysArray		 = decltype(ImGuiIO::KeysDown);
 		using FNavInputArray	 = decltype(ImGuiIO::NavInputs);
 
-		constexpr int32 FLegacyInputCharactersBufferCount = 17;
-		using FLegacyInputCharactersBuffer				  = ImWchar[FLegacyInputCharactersBufferCount];
-
 		using FKeyMap = decltype(ImGuiIO::KeyMap);
 	}	// namespace ImGuiTypes
 

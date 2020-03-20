@@ -207,7 +207,7 @@ FVector2D SImGuiCanvasControl::ComputeDesiredSize(float InScale) const
     {
         ParentWindow = FSlateApplication::Get().FindWidgetWindow(AsShared());
     }
-    return ParentWindow.Pin()->GetClientSizeInScreen();
+    return ParentWindow.Pin()->GetClientSizeInScreen() * InScale;
 }
 
 namespace

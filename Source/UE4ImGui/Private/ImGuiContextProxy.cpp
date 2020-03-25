@@ -109,7 +109,10 @@ void FImGuiContextProxy::Tick(float DeltaSeconds, const FVector2D& InDisplaySize
 
         ImGuiInterops::CopyInput(IO, InputState);
         InputState.ClearUpdateState();
+        
         ImGui::NewFrame();
+        
+        bWantsMouseCapture = IO.WantCaptureMouse;
     }
 
     // Create MainWindowHost that everything will dock to

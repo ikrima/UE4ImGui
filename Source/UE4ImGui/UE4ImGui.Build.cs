@@ -20,6 +20,7 @@ public class UE4ImGui : ModuleRules
         bFasterWithoutUnity = true;
         bEnforceIWYU = true;
         bLegacyPublicIncludePaths = false;
+        CppStandard = CppStandardVersion.Latest;
 
         PrivatePCHHeaderFile = "Private/ImGuiPrivatePCH.h";
 
@@ -33,6 +34,7 @@ public class UE4ImGui : ModuleRules
                 Path.Combine(ModuleDirectory, "ThirdParty/ImGuiUX/ImGuiColorTextEdit"),
                 Path.Combine(ModuleDirectory, "ThirdParty/ImGuiUX/Nelarius_ImNodes"),
                 Path.Combine(ModuleDirectory, "ThirdParty/ImGuiUX/Dmd_NodeEditor/NodeEditor/Include"),
+                Path.Combine(ModuleDirectory, "ThirdParty/ImGuiUX/ImGuizmo"),
             }
             );
 

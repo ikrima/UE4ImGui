@@ -1,0 +1,4 @@
+[submodule "Source/UE4ImGui/ThirdParty/ImGuiUX"]
+	path = Source/UE4ImGui/ThirdParty/ImGuiUX
+	url = https://github.com/ikrima/ImGuiUX
+	branch = master

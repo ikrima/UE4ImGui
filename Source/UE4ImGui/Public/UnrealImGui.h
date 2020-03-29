@@ -6,7 +6,6 @@
 #include <Logging/LogMacros.h>
 
 #include "imgui.h"
-#include "imgui_node_editor.h"
 struct ImGuiContext;
 
 // If enabled, it activates debug code and console variables that in normal usage are hidden.

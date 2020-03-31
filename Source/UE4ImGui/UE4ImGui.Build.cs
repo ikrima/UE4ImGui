@@ -28,13 +28,13 @@ public class UE4ImGui : ModuleRules
             new string[] {
                 Path.Combine(ModuleDirectory, "Public"),
                 Path.Combine(ModuleDirectory, "ThirdParty/ImGui"),
-                Path.Combine(ModuleDirectory, "ThirdParty/ImGuiUX"),
-                Path.Combine(ModuleDirectory, "ThirdParty/ImGuiUX/IconFontCppHeaders"),
-                Path.Combine(ModuleDirectory, "ThirdParty/ImGuiUX/ImGuiAl"),
-                Path.Combine(ModuleDirectory, "ThirdParty/ImGuiUX/ImGuiColorTextEdit"),
-                Path.Combine(ModuleDirectory, "ThirdParty/ImGuiUX/Nelarius_ImNodes"),
-                Path.Combine(ModuleDirectory, "ThirdParty/ImGuiUX/Dmd_NodeEditor/NodeEditor/Include"),
-                Path.Combine(ModuleDirectory, "ThirdParty/ImGuiUX/ImGuizmo"),
+                Path.Combine(ModuleDirectory, "ThirdParty/ImGui/ImGuiUX"),
+                Path.Combine(ModuleDirectory, "ThirdParty/ImGui/ImGuiUX/IconFontCppHeaders"),
+                Path.Combine(ModuleDirectory, "ThirdParty/ImGui/ImGuiUX/ImGuiAl"),
+                Path.Combine(ModuleDirectory, "ThirdParty/ImGui/ImGuiUX/ImGuiColorTextEdit"),
+                Path.Combine(ModuleDirectory, "ThirdParty/ImGui/ImGuiUX/Nelarius_ImNodes"),
+                Path.Combine(ModuleDirectory, "ThirdParty/ImGui/ImGuiUX/Dmd_NodeEditor/NodeEditor/Include"),
+                Path.Combine(ModuleDirectory, "ThirdParty/ImGui/ImGuiUX/ImGuizmo"),
             }
             );
 

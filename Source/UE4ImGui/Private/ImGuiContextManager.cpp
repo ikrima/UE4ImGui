@@ -59,6 +59,10 @@ void FImGuiContextManager::BuildFonts(FTextureManager& TextureManager)
     strncpy_s(icons_config.Name, "CousineRegular", sizeof(icons_config.Name));
     themeFonts[uint8(EIMThemeFont::CousineRegular)] = FontAtlas.AddFontFromMemoryCompressedTTF(CousineRegular_compressed_data, CousineRegular_compressed_size, fontSize, &icons_config);
     addIconFont();
+    strncpy_s(icons_config.Name, "DroidSans", sizeof(icons_config.Name));
+    const FString droidSansFontPath = FPaths::ConvertRelativePathToFull(FImGuiModule::GetImGuiFontDir() / TEXT("DroidSans.ttf"));
+    themeFonts[uint8(EIMThemeFont::DroidSans)] = FontAtlas.AddFontFromFileTTF(StringCast<ANSICHAR>(*droidSansFontPath).Get(), fontSize, &icons_config);
+    addIconFont();
 
 	unsigned char* Pixels;
 	int Width, Height, Bpp;

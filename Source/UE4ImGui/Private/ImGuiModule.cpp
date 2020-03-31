@@ -15,6 +15,7 @@
 #endif
 
 #include <Interfaces/IPluginManager.h>
+#include "GenericPlatform/GenericPlatformFile.h"
 
 
 #define LOCTEXT_NAMESPACE "FImGuiModule"
@@ -37,6 +38,25 @@ static FImGuiModuleManager* ImGuiModuleManager = nullptr;
 #if WITH_EDITOR
 static FImGuiEditor* ImGuiEditor = nullptr;
 #endif
+
+
+
+FString FImGuiModule::GetImGuiIniDir()
+{
+	static const FString SaveDirectory = [] {
+		const FString SavedDir = FPaths::ProjectSavedDir();
+		FString       Directory = SavedDir / FImGuiModule::PluginName;
+		// Make sure that directory is created.
+		IPlatformFile::GetPlatformPhysical().CreateDirectory(*Directory);
+		return Directory;
+	}();
+	return SaveDirectory;
+}
+
+FString FImGuiModule::GetImGuiPathForIni(const FString& Name)
+{
+	return FPaths::Combine(GetImGuiIniDir(), Name);
+}
 
 
 void FImGuiModule::AddNewImGuiWindow(const UWorld& InWorld, const FString& InName, TUniquePtr<FImGuiDrawer> InImGuiDrawer)

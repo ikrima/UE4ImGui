@@ -17,6 +17,9 @@ public:
 	static constexpr inline TCHAR* PluginName = TEXT("UE4ImGui");
 	static constexpr inline TCHAR* ModuleName = TEXT("UE4ImGui");
 
+	UE4IMGUI_API static FString GetImGuiIniDir();
+	UE4IMGUI_API static FString GetImGuiPathForIni(const FString& Name);
+
 	/**
 	 * Singleton-like access to this module's interface. This is just for convenience!
 	 * Beware of calling this during the shutdown phase, though. Your module might have been unloaded already.

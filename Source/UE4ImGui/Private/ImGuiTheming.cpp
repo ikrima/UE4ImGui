@@ -271,7 +271,6 @@ void FImGuiThemeStyle::SetTheme(EIMTheme InTheme)
     colours[ImGuiCol_Text]                 = ImVec4(color_for_text.x, color_for_text.y, color_for_text.z, 1.00f);
     colours[ImGuiCol_TextDisabled]         = ImVec4(color_for_text.x, color_for_text.y, color_for_text.z, 0.58f);
     colours[ImGuiCol_WindowBg]             = ImVec4(color_for_body.x, color_for_body.y, color_for_body.z, 0.95f);
-    colours[ImGuiCol_ChildWindowBg]        = ImVec4(color_for_area.x, color_for_area.y, color_for_area.z, 0.58f);
     colours[ImGuiCol_Border]               = ImVec4(color_for_body.x, color_for_body.y, color_for_body.z, 0.00f);
     colours[ImGuiCol_BorderShadow]         = ImVec4(color_for_body.x, color_for_body.y, color_for_body.z, 0.00f);
     colours[ImGuiCol_FrameBg]              = ImVec4(color_for_area.x, color_for_area.y, color_for_area.z, 1.00f);

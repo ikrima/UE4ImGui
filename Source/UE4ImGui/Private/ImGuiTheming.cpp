@@ -6,14 +6,14 @@
 
 void FImGuiThemeStyle::SetTheme(EIMTheme InTheme)
 {
-  ImVec4  color_for_text = ImVec4(236.f / 255.f, 240.f / 255.f, 241.f / 255.f, 1.0f);
-  ImVec4  color_for_head = ImVec4(41.f / 255.f, 128.f / 255.f, 185.f / 255.f, 1.0f);
-  ImVec4  color_for_area = ImVec4(57.f / 255.f, 79.f / 255.f, 105.f / 255.f, 1.0f);
-  ImVec4  color_for_body = ImVec4(44.f / 255.f, 62.f / 255.f, 80.f / 255.f, 1.0f);
-  ImVec4  color_for_pops = ImVec4(33.f / 255.f, 46.f / 255.f, 60.f / 255.f, 1.0f);
-  ImVec4* colours        = ImGui::GetStyle().Colors;
+  const ImVec4  color_for_text = ImVec4(236.f / 255.f, 240.f / 255.f, 241.f / 255.f, 1.0f);
+  const ImVec4  color_for_head = ImVec4(41.f / 255.f, 128.f / 255.f, 185.f / 255.f, 1.0f);
+  const ImVec4  color_for_area = ImVec4(57.f / 255.f, 79.f / 255.f, 105.f / 255.f, 1.0f);
+  const ImVec4  color_for_body = ImVec4(44.f / 255.f, 62.f / 255.f, 80.f / 255.f, 1.0f);
+  const ImVec4  color_for_pops = ImVec4(33.f / 255.f, 46.f / 255.f, 60.f / 255.f, 1.0f);
+  ImVec4* const colours        = ImGui::GetStyle().Colors;
   switch (InTheme) {
-  case EIMTheme::Black:
+  case EIMTheme::Black: {
     ImGui::StyleColorsDark();
     colours[ImGuiCol_Text]                 = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
     colours[ImGuiCol_TextDisabled]         = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
@@ -68,7 +68,8 @@ void FImGuiThemeStyle::SetTheme(EIMTheme InTheme)
     colours[ImGuiCol_NavWindowingDimBg]     = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
     colours[ImGuiCol_ModalWindowDimBg]      = ImVec4(0.44f, 0.44f, 0.44f, 0.35f);
     break;
-  case EIMTheme::Dark:
+  }
+  case EIMTheme::Dark: {
     ImGui::StyleColorsDark();
     colours[ImGuiCol_Text]                  = ImVec4(0.95f, 0.96f, 0.98f, 1.00f);
     colours[ImGuiCol_TextDisabled]          = ImVec4(0.36f, 0.42f, 0.47f, 1.00f);
@@ -131,7 +132,8 @@ void FImGuiThemeStyle::SetTheme(EIMTheme InTheme)
     // colours[ImGuiCol_DockingPreview]      = ImVec4(0.33f, 0.33f, 0.33f, 1.00f);
 #endif
     break;
-  case EIMTheme::Grey:
+  }
+  case EIMTheme::Grey: {
     ImGui::StyleColorsDark();
     colours[ImGuiCol_Text]                  = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
     colours[ImGuiCol_TextDisabled]          = ImVec4(0.40f, 0.40f, 0.40f, 1.00f);
@@ -187,7 +189,8 @@ void FImGuiThemeStyle::SetTheme(EIMTheme InTheme)
     colours[ImGuiCol_DockingPreview]     = ImVec4(0.85f, 0.85f, 0.85f, 0.28f);
 #endif
     break;
-  case EIMTheme::Light:
+  }
+  case EIMTheme::Light: {
     ImGui::StyleColorsLight();
     colours[ImGuiCol_Text]                 = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
     colours[ImGuiCol_TextDisabled]         = ImVec4(0.60f, 0.60f, 0.60f, 1.00f);
@@ -224,12 +227,14 @@ void FImGuiThemeStyle::SetTheme(EIMTheme InTheme)
     colours[ImGuiCol_PlotHistogramHovered] = ImVec4(1.00f, 0.60f, 0.00f, 1.00f);
     colours[ImGuiCol_TextSelectedBg]       = ImVec4(0.26f, 0.59f, 0.98f, 0.35f);
     break;
-  case EIMTheme::Cherry: ImGui::StyleColorsDark();
-#define HI(v) ImVec4(0.502f, 0.075f, 0.256f, v)
-#define MED(v) ImVec4(0.455f, 0.198f, 0.301f, v)
-#define LOW(v) ImVec4(0.232f, 0.201f, 0.271f, v)
-#define BG(v) ImVec4(0.200f, 0.220f, 0.270f, v)
-#define TEXTCol(v) ImVec4(0.860f, 0.930f, 0.890f, v)
+  }
+  case EIMTheme::Cherry:  {
+    ImGui::StyleColorsDark();
+    #define HI(v)      ImVec4(0.502f, 0.075f, 0.256f, v)
+    #define MED(v)     ImVec4(0.455f, 0.198f, 0.301f, v)
+    #define LOW(v)     ImVec4(0.232f, 0.201f, 0.271f, v)
+    #define BG(v)      ImVec4(0.200f, 0.220f, 0.270f, v)
+    #define TEXTCol(v) ImVec4(0.860f, 0.930f, 0.890f, v)
 
     colours[ImGuiCol_Text]                 = TEXTCol(0.78f);
     colours[ImGuiCol_TextDisabled]         = TEXTCol(0.28f);
@@ -266,8 +271,15 @@ void FImGuiThemeStyle::SetTheme(EIMTheme InTheme)
     colours[ImGuiCol_PlotHistogramHovered] = MED(1.00f);
     colours[ImGuiCol_TextSelectedBg]       = MED(0.43f);
     colours[ImGuiCol_Border]               = ImVec4(0.539f, 0.479f, 0.255f, 0.162f);
+
+    #undef HI
+    #undef MED
+    #undef LOW
+    #undef BG
+    #undef TEXTCol
     break;
-  case EIMTheme::Blue:
+  }
+  case EIMTheme::Blue: {
     colours[ImGuiCol_Text]                 = ImVec4(color_for_text.x, color_for_text.y, color_for_text.z, 1.00f);
     colours[ImGuiCol_TextDisabled]         = ImVec4(color_for_text.x, color_for_text.y, color_for_text.z, 0.58f);
     colours[ImGuiCol_WindowBg]             = ImVec4(color_for_body.x, color_for_body.y, color_for_body.z, 0.95f);
@@ -304,8 +316,9 @@ void FImGuiThemeStyle::SetTheme(EIMTheme InTheme)
     colours[ImGuiCol_PopupBg]              = ImVec4(color_for_pops.x, color_for_pops.y, color_for_pops.z, 0.92f);
     colours[ImGuiCol_ModalWindowDarkening] = ImVec4(color_for_area.x, color_for_area.y, color_for_area.z, 0.73f);
     break;
-  case EIMTheme::Classic: ImGui::StyleColorsClassic(); break;
-  case EIMTheme::ClassicDark: ImGui::StyleColorsDark(); break;
+  }
+  case EIMTheme::Classic:      ImGui::StyleColorsClassic(); break;
+  case EIMTheme::ClassicDark:  ImGui::StyleColorsDark(); break;
   case EIMTheme::ClassicLight: ImGui::StyleColorsLight(); break;
   default: break;
   }

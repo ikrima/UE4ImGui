@@ -6,7 +6,7 @@
 #include "ImGuiTextureHandle.h"
 #include "Templates/UniquePtr.h"
 #include <Modules/ModuleManager.h>
-#include "ImGuiDrawer.h"
+#include "ImGuiContextManager.h"
 #include "Misc/Paths.h"
 #include "Interfaces/IPluginManager.h"
 

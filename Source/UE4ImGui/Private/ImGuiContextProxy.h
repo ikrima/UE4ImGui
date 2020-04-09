@@ -9,7 +9,7 @@
 #include <GenericPlatform/ICursor.h>
 
 #include <string>
-#include "ImGuiDrawer.h"
+#include "ImGuiContextManager.h"
 
 // Represents a single ImGui context. All the context updates should be done through this proxy. During update it
 // broadcasts draw events to allow listeners draw their controls. After update it stores draw data.

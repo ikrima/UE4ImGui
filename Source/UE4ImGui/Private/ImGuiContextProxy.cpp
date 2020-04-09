@@ -69,7 +69,7 @@ FImGuiContextProxy::FImGuiContextProxy(const FString& InName, ImFontAtlas* InFon
 
     if (DrawerObj.IsValid())
     {
-        DrawerObj->OnInitialize(*InFontAtlas);
+        DrawerObj->OnInitialize();
     }
 }
 

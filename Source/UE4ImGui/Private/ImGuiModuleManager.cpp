@@ -47,6 +47,8 @@ void FImGuiModuleManager::AddNewImGuiWindow(const FString& InName, TUniquePtr<FI
     ContextManager.BuildFonts(TextureManager);
 	}
 
+  InImGuiDrawer->imguiCtxMgr = &ContextManager;
+
   FTabManager* const tabManager = [] {
 #if WITH_EDITOR
       if (FLevelEditorModule* levelEditorModule = FModuleManager::GetModulePtr<FLevelEditorModule>("LevelEditor"))

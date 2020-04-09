@@ -29,6 +29,7 @@ public class UE4ImGui : ModuleRules
                 Path.Combine(ModuleDirectory, "Public"),
                 Path.Combine(ModuleDirectory, "ThirdParty/ImGui"),
                 Path.Combine(ModuleDirectory, "ThirdParty/ImGui/ImGuiUX"),
+                Path.Combine(ModuleDirectory, "ThirdParty/ImGui/ImGuiUX/AdobeSpectrum"),
                 Path.Combine(ModuleDirectory, "ThirdParty/ImGui/ImGuiUX/IconFontCppHeaders"),
                 Path.Combine(ModuleDirectory, "ThirdParty/ImGui/ImGuiUX/ImGuiColorTextEdit"),
                 Path.Combine(ModuleDirectory, "ThirdParty/ImGui/ImGuiUX/Dmd_NodeEditor/NodeEditor/Include"),

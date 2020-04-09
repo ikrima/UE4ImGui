@@ -59,9 +59,9 @@ FString FImGuiModule::GetImGuiPathForIni(const FString& Name)
 }
 
 
-void FImGuiModule::AddNewImGuiWindow(const UWorld& InWorld, const FString& InName, TUniquePtr<FImGuiDrawer> InImGuiDrawer)
+void FImGuiModule::AddNewImGuiWindow(const FString& InName, TUniquePtr<FImGuiDrawer> InImGuiDrawer)
 {
-    ImGuiModuleManager->AddNewImGuiWindow(InWorld, InName, MoveTemp(InImGuiDrawer));
+    ImGuiModuleManager->AddNewImGuiWindow(InName, MoveTemp(InImGuiDrawer));
 }
 
 FImGuiTextureHandle FImGuiModule::FindTextureHandle(const FName& Name)

@@ -5,7 +5,7 @@
 struct UE4IMGUI_API FImGuiDrawer
 {
 protected:
-    virtual void OnInitialize() {}
+    virtual void OnInitialize(struct ImFontAtlas&) {}
     virtual void OnTick(const float InDeltaTime) {}
     virtual void OnDraw() = 0;
     virtual void OnDestroy() {}

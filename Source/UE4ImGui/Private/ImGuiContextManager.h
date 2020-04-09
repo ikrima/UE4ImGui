@@ -3,13 +3,24 @@
 #pragma once
 
 #include "ImGuiContextProxy.h"
-#include "ImGuiTheming.h"
+
+enum class EIMThemeFont : uint8
+{
+  Default = 0,
+  Roboto = 1,
+  KarlaRegular = 2,
+  CousineRegular = 3,
+  DroidSans = 4,
+  AdobeClean = 5,
+};
+
+constexpr uint8 EIMThemeFont_MaxCount = uint8(EIMThemeFont::AdobeClean) + 1;
 
 // Manages ImGui context proxies.
 class FImGuiContextManager
 {
 public:
-    FImGuiContextManager() = default;
+  FImGuiContextManager() = default;
 	FImGuiContextManager(const FImGuiContextManager&) = delete;
 	FImGuiContextManager& operator=(const FImGuiContextManager&) = delete;
 	FImGuiContextManager(FImGuiContextManager&&) = delete;
@@ -18,8 +29,8 @@ public:
 	ImFontAtlas& GetFontAtlas() { return FontAtlas; }
 	const ImFontAtlas& GetFontAtlas() const { return FontAtlas; }
 
-    void BuildFonts(class FTextureManager& TextureManager);
-    struct ImFont* themeFonts[EIMThemeFont_MaxCount] = {};
+  void BuildFonts(class FTextureManager& TextureManager);
+  struct ImFont* themeFonts[EIMThemeFont_MaxCount] = {};
 
 private:
 

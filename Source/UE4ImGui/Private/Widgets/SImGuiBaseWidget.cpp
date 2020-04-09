@@ -57,12 +57,12 @@ namespace CVars
 #endif // IMGUI_WIDGET_DEBUG
 
 
-void SImGuiBaseWidget::Construct(const FArguments& InArgs, TUniquePtr<FImGuiDrawer> InImGuiDrawer, const FImGuiThemeStyle& InThemeStyle)
+void SImGuiBaseWidget::Construct(const FArguments& InArgs, TUniquePtr<FImGuiDrawer> InImGuiDrawer)
 {
 	checkf(InArgs._ModuleManager, TEXT("Null Module Manager argument"));
 
 	ModuleManager = InArgs._ModuleManager;
-    ContextProxy = MakeUnique<FImGuiContextProxy>(InArgs._ContextName, &ModuleManager->GetContextManager().GetFontAtlas(), MoveTemp(InImGuiDrawer), InThemeStyle);
+  ContextProxy = MakeUnique<FImGuiContextProxy>(InArgs._ContextName, &ModuleManager->GetContextManager().GetFontAtlas(), MoveTemp(InImGuiDrawer));
 
 	// Register for settings change.
 	RegisterImGuiSettingsDelegates();

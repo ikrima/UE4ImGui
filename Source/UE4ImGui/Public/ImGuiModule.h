@@ -41,7 +41,7 @@ public:
 	}
 	static inline FString GetImGuiFontDir()
 	{
-		return FPaths::ConvertRelativePathToFull(GetImGuiLibDir() / TEXT("misc") / TEXT("fonts"));
+		return FPaths::ConvertRelativePathToFull(GetImGuiLibDir() / TEXT("ImGuiUX") / TEXT("fonts"));
 	}
 	/**
 	 * Checks to see if this module is loaded and ready. It is only valid to call Get() if IsAvailable() returns true.
@@ -53,7 +53,7 @@ public:
 		return FModuleManager::Get().IsModuleLoaded(FImGuiModule::ModuleName);
 	}
 
-    IMGUI_API virtual void AddNewImGuiWindow(const UWorld& InWorld, const FString& InName, TUniquePtr<FImGuiDrawer> InImGuiDrawer);
+  IMGUI_API void AddNewImGuiWindow(const FString& InName, TUniquePtr<FImGuiDrawer> InImGuiDrawer);
 
 	/**
 	 * If it exists, get a handle to the texture with given resource name.

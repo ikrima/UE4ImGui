@@ -8,7 +8,6 @@
 #include "Utilities/WorldContext.h"
 #include "Utilities/WorldContextIndex.h"
 
-#include "ImGuiTheming.h"
 #include "IconFontCppHeaders/IconsFontAwesome5.h"
 #include "fonts/CousineRegular.inl"
 #include "fonts/KarlaRegular.inl"
@@ -62,6 +61,10 @@ void FImGuiContextManager::BuildFonts(FTextureManager& TextureManager)
     strncpy_s(icons_config.Name, "DroidSans", sizeof(icons_config.Name));
     const FString droidSansFontPath = FPaths::ConvertRelativePathToFull(FImGuiModule::GetImGuiFontDir() / TEXT("DroidSans.ttf"));
     themeFonts[uint8(EIMThemeFont::DroidSans)] = FontAtlas.AddFontFromFileTTF(StringCast<ANSICHAR>(*droidSansFontPath).Get(), fontSize, &icons_config);
+    addIconFont();
+    strncpy_s(icons_config.Name, "AdobeClean", sizeof(icons_config.Name));
+    const FString adobeCleanFontPath = FPaths::ConvertRelativePathToFull(FImGuiModule::GetImGuiFontDir() / TEXT("AdobeClean-Regular.ttf"));
+    themeFonts[uint8(EIMThemeFont::AdobeClean)] = FontAtlas.AddFontFromFileTTF(StringCast<ANSICHAR>(*adobeCleanFontPath).Get(), fontSize, &icons_config);
     addIconFont();
 
 	unsigned char* Pixels;

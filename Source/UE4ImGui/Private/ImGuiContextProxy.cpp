@@ -42,8 +42,8 @@ namespace
     }
 }	// namespace
 
-FImGuiContextProxy::FImGuiContextProxy(const FString& InName, ImFontAtlas* InFontAtlas, TUniquePtr<FImGuiDrawer> InDrawer, const FImGuiThemeStyle& InThemeStyle)
-    : Name(InName), IniFilename(TCHAR_TO_ANSI(*GetIniFile(InName))), DrawerObj(MoveTemp(InDrawer)), ThemeStyle(InThemeStyle)
+FImGuiContextProxy::FImGuiContextProxy(const FString& InName, ImFontAtlas* InFontAtlas, TUniquePtr<FImGuiDrawer> InDrawer)
+    : Name(InName), IniFilename(TCHAR_TO_ANSI(*GetIniFile(InName))), DrawerObj(MoveTemp(InDrawer))
 {
     // Create context.
     Context = ImGui::CreateContext(InFontAtlas);
@@ -69,10 +69,8 @@ FImGuiContextProxy::FImGuiContextProxy(const FString& InName, ImFontAtlas* InFon
 
     if (DrawerObj.IsValid())
     {
-        DrawerObj->OnInitialize();
+        DrawerObj->OnInitialize(*InFontAtlas);
     }
-
-    ThemeStyle.OnInit(*InFontAtlas);
 }
 
 FImGuiContextProxy::~FImGuiContextProxy()
@@ -83,14 +81,11 @@ FImGuiContextProxy::~FImGuiContextProxy()
         // version), even though we can pass it to the destroy function.
         SetAsCurrent();
 
-        ThemeStyle.OnDestroy();
-
         if (DrawerObj.IsValid())
         {
             DrawerObj->OnDestroy();
             DrawerObj.Reset();
         }
-
 
         // Save context data and destroy.
         ImGui::DestroyContext(Context);
@@ -114,100 +109,11 @@ void FImGuiContextProxy::Tick(float DeltaSeconds, const FVector2D& InDisplaySize
         
         bWantsMouseCapture = IO.WantCaptureMouse;
     }
-
-    // Create MainWindowHost that everything will dock to
-    {
-        constexpr bool opt_fullscreen = true;
-
-        // We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
-        // because it would be confusing to have two docking targets within each others.
-        ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
-        if (opt_fullscreen)
-        {
-            ImGuiViewport* viewport = ImGui::GetMainViewport();
-            ImGui::SetNextWindowPos(viewport->Pos);
-            ImGui::SetNextWindowSize(viewport->Size);
-            ImGui::SetNextWindowViewport(viewport->ID);
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-            window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-            window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-        }
-
-        // When using ImGuiDockNodeFlags_PassthruCentralNode, DockSpace() will render our background 
-        // and handle the pass-thru hole, so we ask Begin() to not render a background.
-        if (dockspaceFlags & ImGuiDockNodeFlags_PassthruCentralNode)
-            window_flags |= ImGuiWindowFlags_NoBackground;
-
-        // Important: note that we proceed even if Begin() returns false (aka window is collapsed).
-        // This is because we want to keep our DockSpace() active. If a DockSpace() is inactive,
-        // all active windows docked into it will lose their parent and become undocked.
-        // We cannot preserve the docking relationship between an active window and an inactive docking, otherwise
-        // any change of dockspace/settings would lead to windows being stuck in limbo and never being visible.
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-        ImGui::Begin(ImGuiUX::GetMainHostWindowName(), nullptr, window_flags);
-        {
-            ImGui::PopStyleVar();
-
-            if (opt_fullscreen)
-                ImGui::PopStyleVar(2);
-
-            // DockSpace
-            {
-                ImGuiID dockspace_id = ImGui::GetID(ImGuiUX::GetMainHostDockSpaceName());
-                ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspaceFlags);
-            }
-                
-            if (ImGui::BeginMainMenuBar())
-            {
-                if (ImGui::BeginMenu("File"))
-                {
-                    if (ImGui::MenuItem("New")) {}
-                    if (ImGui::MenuItem("Open", "Ctrl+O")) {}
-                    if (ImGui::MenuItem("Save", "Ctrl+S")) {}
-                    if (ImGui::MenuItem("Close")) {}
-                    ImGui::EndMenu();
-                }
-
-                ImGui::EndMainMenuBar();
-            }
-
-            if (bShowAppMetrics) { ImGui::ShowMetricsWindow(&bShowAppMetrics); }
-            if (bShowDemoWindow) { ImGui::ShowDemoWindow(&bShowDemoWindow); }
-        }
-        ImGui::End();
-    }
     
     // Draw Widget
     {
         DrawerObj->OnTick(DeltaSeconds);
-        ThemeStyle.OnBegin();
         DrawerObj->OnDraw();
-        ThemeStyle.OnEnd();
-    }
-
-    if (ImGui::BeginMainMenuBar())
-    {
-        if (ImGui::BeginMenu("Debug"))
-        {
-            ImGui::MenuItem("Metrics", NULL, &bShowAppMetrics);
-            ImGui::MenuItem("DemoWindow", NULL, &bShowDemoWindow);
-            ImGui::Separator();
-
-            if (ImGui::MenuItem("Flag: NoSplit",                "", (dockspaceFlags & ImGuiDockNodeFlags_NoSplit)                != 0)) { dockspaceFlags ^= ImGuiDockNodeFlags_NoSplit;					}
-            if (ImGui::MenuItem("Flag: NoResize",               "", (dockspaceFlags & ImGuiDockNodeFlags_NoResize)               != 0)) { dockspaceFlags ^= ImGuiDockNodeFlags_NoResize;				}
-            if (ImGui::MenuItem("Flag: NoDockingInCentralNode", "", (dockspaceFlags & ImGuiDockNodeFlags_NoDockingInCentralNode) != 0)) { dockspaceFlags ^= ImGuiDockNodeFlags_NoDockingInCentralNode;	}
-            if (ImGui::MenuItem("Flag: PassthruCentralNode",    "", (dockspaceFlags & ImGuiDockNodeFlags_PassthruCentralNode)    != 0)) { dockspaceFlags ^= ImGuiDockNodeFlags_PassthruCentralNode;		}
-            if (ImGui::MenuItem("Flag: AutoHideTabBar",         "", (dockspaceFlags & ImGuiDockNodeFlags_AutoHideTabBar)         != 0)) { dockspaceFlags ^= ImGuiDockNodeFlags_AutoHideTabBar;          }
-            ImGui::Separator();
-
-            ImGui::EndMenu();
-        }
-
-        const float frameRate = ImGui::GetIO().Framerate;
-        ImGui::Text("%02.2fms (%03.2fFPS)", frameRate, frameRate ? 1000.0f / frameRate : 0.0f);
-
-        ImGui::EndMainMenuBar();
     }
 
     // Ending frame will produce render output that we capture and store for later use. This also puts context to

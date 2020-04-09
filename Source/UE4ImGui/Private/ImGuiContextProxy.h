@@ -10,8 +10,6 @@
 
 #include <string>
 #include "ImGuiDrawer.h"
-#include "ImGuiTheming.h"
-
 
 // Represents a single ImGui context. All the context updates should be done through this proxy. During update it
 // broadcasts draw events to allow listeners draw their controls. After update it stores draw data.
@@ -19,7 +17,7 @@ class FImGuiContextProxy
 {
 public:
 
-    FImGuiContextProxy(const FString& Name, ImFontAtlas* InFontAtlas, TUniquePtr<FImGuiDrawer> InDrawer, const FImGuiThemeStyle& InThemeStyle);
+    FImGuiContextProxy(const FString& Name, ImFontAtlas* InFontAtlas, TUniquePtr<FImGuiDrawer> InDrawer);
 	~FImGuiContextProxy();
 
 	FImGuiContextProxy(const FImGuiContextProxy&) = delete;
@@ -84,11 +82,6 @@ private:
 
 	uint32 LastFrameNumber = 0;
 
-	bool bShowAppMetrics = false;
-	bool bShowDemoWindow = false;
-	ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_None;
-
 	std::string IniFilename;
-    TUniquePtr<FImGuiDrawer> DrawerObj;
-    FImGuiThemeStyle ThemeStyle = { EIMTheme::Dark, EIMThemeFont::Roboto, 16.0f };
+  TUniquePtr<FImGuiDrawer> DrawerObj;
 };

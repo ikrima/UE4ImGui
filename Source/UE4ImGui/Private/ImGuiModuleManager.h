@@ -40,7 +40,7 @@ private:
 	FImGuiModuleManager& operator=(FImGuiModuleManager&&) = delete;
 
 	//void AddWidgetToViewport(UGameViewportClient* GameViewport);
-    void AddNewImGuiWindow(const UWorld& InWorld, const FString& InName, TUniquePtr<FImGuiDrawer> InImGuiDrawer);
+  void AddNewImGuiWindow(const FString& InName, TUniquePtr<FImGuiDrawer> InImGuiDrawer);
 
 	// Collection of module state properties.
 	FImGuiModuleProperties Properties;

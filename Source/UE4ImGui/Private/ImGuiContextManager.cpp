@@ -18,6 +18,8 @@
 #include "Misc/Paths.h"
 #include "ImGuiModule.h"
 
+#include "ImGuiContextProxy.h"
+
 void FImGuiContextManager::BuildFonts(FTextureManager& TextureManager)
 {    
   constexpr float fontSize = 16;
@@ -75,4 +77,19 @@ void FImGuiContextManager::BuildFonts(FTextureManager& TextureManager)
 
   // Set font texture index in ImGui.
   FontAtlas.TexID = ImGuiInterops::ToImTextureID(FontsTexureIndex);
+}
+
+const struct ImFontAtlas& FImGuiDrawer::GetFontAtlas() const
+{
+  return imguiCtxMgr->GetFontAtlas();
+}
+
+void FImGuiDrawer::ShowImGuiDbgInputState()
+{
+  imGuiCtxProxy->ShowImGuiDbgInputState();
+}
+
+void FImGuiDrawer::ShowSlateHostDbgWindow()
+{
+  imGuiCtxProxy->ShowSlateHostDbgWindow();
 }

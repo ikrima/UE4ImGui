@@ -11,6 +11,8 @@
 #include "Misc/Paths.h"
 #include "GenericPlatform/GenericPlatformFile.h"
 #include "ImGuiModule.h"
+#include "Widgets/SImGuiBaseWidget.h"
+#include "Framework/Application/SlateApplication.h"
 
 
 static constexpr float DEFAULT_CANVAS_WIDTH  = 3840.f;
@@ -69,6 +71,7 @@ FImGuiContextProxy::FImGuiContextProxy(const FString& InName, ImFontAtlas* InFon
 
     if (DrawerObj.IsValid())
     {
+        DrawerObj->imGuiCtxProxy = this;
         DrawerObj->OnInitialize();
     }
 }
@@ -161,4 +164,249 @@ void FImGuiContextProxy::UpdateDrawData(ImDrawData* DrawData)
         // If we are not rendering then this might be a good moment to empty the array.
         DrawLists.Empty();
     }
+}
+
+
+static TArray<FKey> GetImGuiMappedKeys()
+{
+	TArray<FKey> Keys;
+	Keys.Reserve(Utilities::ArraySize<ImGuiInterops::ImGuiTypes::FKeyMap>::value + 8);
+
+	// ImGui IO key map.
+	Keys.Emplace(EKeys::Tab);
+	Keys.Emplace(EKeys::Left);
+	Keys.Emplace(EKeys::Right);
+	Keys.Emplace(EKeys::Up);
+	Keys.Emplace(EKeys::Down);
+	Keys.Emplace(EKeys::PageUp);
+	Keys.Emplace(EKeys::PageDown);
+	Keys.Emplace(EKeys::Home);
+	Keys.Emplace(EKeys::End);
+	Keys.Emplace(EKeys::Delete);
+	Keys.Emplace(EKeys::BackSpace);
+	Keys.Emplace(EKeys::Enter);
+	Keys.Emplace(EKeys::Escape);
+	Keys.Emplace(EKeys::A);
+	Keys.Emplace(EKeys::C);
+	Keys.Emplace(EKeys::V);
+	Keys.Emplace(EKeys::X);
+	Keys.Emplace(EKeys::Y);
+	Keys.Emplace(EKeys::Z);
+
+	// Modifier keys.
+	Keys.Emplace(EKeys::LeftShift);
+	Keys.Emplace(EKeys::RightShift);
+	Keys.Emplace(EKeys::LeftControl);
+	Keys.Emplace(EKeys::RightControl);
+	Keys.Emplace(EKeys::LeftAlt);
+	Keys.Emplace(EKeys::RightAlt);
+	Keys.Emplace(EKeys::LeftCommand);
+	Keys.Emplace(EKeys::RightCommand);
+
+	return Keys;
+}
+
+// Column layout utilities.
+namespace Columns
+{
+	template<typename FunctorType>
+	static void CollapsingGroup(const char* Name, int Columns, FunctorType&& DrawContent)
+	{
+		if (ImGui::CollapsingHeader(Name, ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			const int LastColumns = ImGui::GetColumnsCount();
+			ImGui::Columns(Columns, nullptr, false);
+			DrawContent();
+			ImGui::Columns(LastColumns);
+		}
+	}
+}
+
+// Controls tweaked for 2-columns layout.
+namespace TwoColumns
+{
+	template<typename FunctorType>
+	static inline void CollapsingGroup(const char* Name, FunctorType&& DrawContent)
+	{
+		Columns::CollapsingGroup(Name, 2, std::forward<FunctorType>(DrawContent));
+	}
+
+	namespace
+	{
+		void LabelText(const char* Label)
+		{
+			ImGui::Text("%s:", Label);
+		}
+
+		void LabelText(const wchar_t* Label)
+		{
+			ImGui::Text("%ls:", Label);
+		}
+	}
+
+	template<typename LabelType>
+	static void Value(LabelType&& Label, int32 Value)
+	{
+		LabelText(Label); ImGui::NextColumn();
+		ImGui::Text("%d", Value); ImGui::NextColumn();
+	}
+
+	template<typename LabelType>
+	static void Value(LabelType&& Label, uint32 Value)
+	{
+		LabelText(Label); ImGui::NextColumn();
+		ImGui::Text("%u", Value); ImGui::NextColumn();
+	}
+
+	template<typename LabelType>
+	static void Value(LabelType&& Label, float Value)
+	{
+		LabelText(Label); ImGui::NextColumn();
+		ImGui::Text("%f", Value); ImGui::NextColumn();
+	}
+
+	template<typename LabelType>
+	static void Value(LabelType&& Label, bool bValue)
+	{
+		LabelText(Label); ImGui::NextColumn();
+		ImGui::Text("%ls", ((bValue) ? TEXT("true") : TEXT("false"))); ImGui::NextColumn();
+	}
+
+	template<typename LabelType>
+	static void Value(LabelType&& Label, const TCHAR* Value)
+	{
+		LabelText(Label); ImGui::NextColumn();
+		ImGui::Text("%ls", Value); ImGui::NextColumn();
+	}
+}
+
+namespace Styles
+{
+	template<typename FunctorType>
+	static void TextHighlight(bool bHighlight, FunctorType&& DrawContent)
+	{
+		if (bHighlight)
+		{
+			ImGui::PushStyleColor(ImGuiCol_Text, { 1.f, 1.f, 0.5f, 1.f });
+		}
+		DrawContent();
+		if (bHighlight)
+		{
+			ImGui::PopStyleColor();
+		}
+	}
+}
+
+void FImGuiContextProxy::ShowImGuiDbgInputState() const
+{
+	const ImVec4 HiglightColor{ 1.f, 1.f, 0.5f, 1.f };
+	Columns::CollapsingGroup("Mapped Keys", 4, [&]()
+	{
+		static const auto& Keys = GetImGuiMappedKeys();
+
+		const int32 Num = Keys.Num();
+
+		// Simplified when slicing for two 2.
+		const int32 RowsNum = (Num + 1) / 2;
+
+		for (int32 Row = 0; Row < RowsNum; Row++)
+		{
+			for (int32 Col = 0; Col < 2; Col++)
+			{
+				const int32 Idx = Row + Col * RowsNum;
+				if (Idx < Num)
+				{
+					const FKey& Key = Keys[Idx];
+					const uint32 KeyIndex = ImGuiInterops::GetKeyIndex(Key);
+					Styles::TextHighlight(InputState.GetKeys()[KeyIndex], [&]()
+					{
+						TwoColumns::Value(*Key.GetDisplayName().ToString(), KeyIndex);
+					});
+				}
+				else
+				{
+					ImGui::NextColumn(); ImGui::NextColumn();
+				}
+			}
+		}
+	});
+
+	Columns::CollapsingGroup("Modifier Keys", 4, [&]()
+	{
+		Styles::TextHighlight(InputState.IsShiftDown(), [&]() { ImGui::Text("Shift"); }); ImGui::NextColumn();
+		Styles::TextHighlight(InputState.IsControlDown(), [&]() { ImGui::Text("Control"); }); ImGui::NextColumn();
+		Styles::TextHighlight(InputState.IsAltDown(), [&]() { ImGui::Text("Alt"); }); ImGui::NextColumn();
+		ImGui::NextColumn();
+	});
+
+	Columns::CollapsingGroup("Mouse Buttons", 4, [&]()
+	{
+		static const FKey Buttons[] = { EKeys::LeftMouseButton, EKeys::RightMouseButton,
+			EKeys::MiddleMouseButton, EKeys::ThumbMouseButton, EKeys::ThumbMouseButton2 };
+
+		const int32 Num = Utilities::GetArraySize(Buttons);
+
+		// Simplified when slicing for two 2.
+		const int32 RowsNum = (Num + 1) / 2;
+
+		for (int32 Row = 0; Row < RowsNum; Row++)
+		{
+			for (int32 Col = 0; Col < 2; Col++)
+			{
+				const int32 Idx = Row + Col * RowsNum;
+				if (Idx < Num)
+				{
+					const FKey& Button = Buttons[Idx];
+					const uint32 MouseIndex = ImGuiInterops::GetMouseIndex(Button);
+					Styles::TextHighlight(InputState.GetMouseButtons()[MouseIndex], [&]()
+					{
+						TwoColumns::Value(*Button.GetDisplayName().ToString(), MouseIndex);
+					});
+				}
+				else
+				{
+					ImGui::NextColumn(); ImGui::NextColumn();
+				}
+			}
+		}
+	});
+
+	Columns::CollapsingGroup("Mouse Axes", 4, [&]()
+	{
+		TwoColumns::Value("Position X", InputState.GetMousePosition().X);
+		TwoColumns::Value("Position Y", InputState.GetMousePosition().Y);
+		TwoColumns::Value("Wheel Delta", InputState.GetMouseWheelDelta());
+		ImGui::NextColumn(); ImGui::NextColumn();
+	});
+
+}
+
+
+void FImGuiContextProxy::ShowSlateHostDbgWindow() const
+{
+  TSharedPtr<SImGuiBaseWidget> slateHost = SlateHostWidget.Pin();
+  ImGui::Spacing();
+
+  TwoColumns::CollapsingGroup("Context", [&]() { TwoColumns::Value("Context Name", *this->GetName()); });
+
+  TwoColumns::CollapsingGroup("Input Mode", [&]() { TwoColumns::Value("Input Enabled", slateHost->bInputEnabled); });
+
+  TwoColumns::CollapsingGroup("Widget", [&]() {
+    TwoColumns::Value("Visibility", *slateHost->GetVisibility().ToString());
+    TwoColumns::Value("Is Hovered", slateHost->IsHovered());
+    TwoColumns::Value("Is Directly Hovered", slateHost->IsDirectlyHovered());
+    TwoColumns::Value("Has Keyboard Input", slateHost->HasKeyboardFocus());
+  });
+
+  TwoColumns::CollapsingGroup("Window", [&]() {
+    const TSharedPtr<SWindow>& ParentWindow = FSlateApplication::Get().FindWidgetWindow(slateHost.ToSharedRef());
+    TwoColumns::Value("Is Foreground Window", ParentWindow->GetNativeWindow()->IsForegroundWindow());
+    TwoColumns::Value("Is Hovered", ParentWindow->IsHovered());
+    TwoColumns::Value("Is Directly Hovered", ParentWindow->IsDirectlyHovered());
+    TwoColumns::Value("Has Mouse Capture", ParentWindow->HasMouseCapture());
+    TwoColumns::Value("Has Keyboard Input", ParentWindow->HasKeyboardFocus());
+    TwoColumns::Value("Has Focused Descendants", ParentWindow->HasFocusedDescendants());
+    auto Widget = slateHost->PreviousUserFocusedWidget.Pin();
+    TwoColumns::Value("Previous User Focused", Widget.IsValid() ? *Widget->GetTypeAsString() : TEXT("None"));
+  });
 }

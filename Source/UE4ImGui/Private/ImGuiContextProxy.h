@@ -60,8 +60,9 @@ public:
 	// Tick to advance context to the next frame. Only one call per frame will be processed.
 	void Tick(float DeltaSeconds, const FVector2D& InDisplaySize);
 
+	void ShowImGuiDbgInputState() const;
+	void ShowSlateHostDbgWindow() const;
 private:
-
 	void UpdateDrawData(ImDrawData* DrawData);
 
 	ImGuiContext* Context;
@@ -84,4 +85,6 @@ private:
 
 	std::string IniFilename;
   TUniquePtr<FImGuiDrawer> DrawerObj;
+	TWeakPtr<class SImGuiBaseWidget> SlateHostWidget;
+	friend class SImGuiBaseWidget;
 };

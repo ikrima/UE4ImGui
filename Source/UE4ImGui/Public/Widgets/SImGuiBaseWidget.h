@@ -8,9 +8,6 @@
 #include "ImGuiContextProxy.h"
 #include "Templates/UniquePtr.h"
 
-// Hide ImGui Widget debug in non-developer mode.
-#define IMGUI_WIDGET_DEBUG IMGUI_MODULE_DEVELOPER
-
 class FImGuiModuleManager;
 class SImGuiCanvasControl;
 class UImGuiInputHandler;
@@ -95,8 +92,6 @@ private:
 
 	void SetImGuiTransform(const FSlateRenderTransform& Transform) { ImGuiTransform = Transform; }
 
-	void OnDebugDraw();
-
 	FImGuiModuleManager* ModuleManager = nullptr;
 	TWeakObjectPtr<UImGuiInputHandler> InputHandler;
 
@@ -112,5 +107,6 @@ private:
 	TSharedPtr<SImGuiCanvasControl> CanvasControlWidget;
 	TWeakPtr<SWidget> PreviousUserFocusedWidget;
 
-    TUniquePtr<FImGuiContextProxy> ContextProxy;
+  TUniquePtr<FImGuiContextProxy> ContextProxy;
+	friend class FImGuiContextProxy;
 };

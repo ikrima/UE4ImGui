@@ -14,7 +14,7 @@ enum class EIMThemeFont : uint8
 
 constexpr uint8 EIMThemeFont_MaxCount = uint8(EIMThemeFont::AdobeClean) + 1;
 
-struct UE4IMGUI_API FImGuiDrawer {
+class UE4IMGUI_API FImGuiDrawer {
 protected:
   virtual void OnInitialize() {}
   virtual void OnTick(const float InDeltaTime) {}
@@ -22,10 +22,18 @@ protected:
   virtual void OnDestroy() {}
 
 public:
-  virtual ~FImGuiDrawer()           = default;
-  class FImGuiContextManager* imguiCtxMgr = nullptr;
+  virtual ~FImGuiDrawer() = default;
 
+  const struct ImFontAtlas& GetFontAtlas() const;
+  void                      ShowImGuiDbgInputState();
+  void                      ShowSlateHostDbgWindow();
+
+private:
+  class FImGuiContextManager*     imguiCtxMgr   = nullptr;
+  class FImGuiContextProxy const* imGuiCtxProxy = nullptr;
   friend class FImGuiContextProxy;
+  friend class FImGuiContextManager;
+  friend class FImGuiModuleManager;
 };
 
 

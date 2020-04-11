@@ -13,13 +13,13 @@ class SImGuiCanvasControl;
 class UImGuiInputHandler;
 
 // Slate widget for rendering ImGui output and storing Slate inputs.
-class SImGuiBaseWidget : public SCompoundWidget
+class SImGuiHostWidget : public SCompoundWidget
 {
 	typedef SCompoundWidget Super;
 
 public:
 
-	SLATE_BEGIN_ARGS(SImGuiBaseWidget)
+	SLATE_BEGIN_ARGS(SImGuiHostWidget)
 	{}
 	SLATE_ARGUMENT(FImGuiModuleManager*, ModuleManager)
     SLATE_ARGUMENT(FString, ContextName)
@@ -27,7 +27,7 @@ public:
 
 	void Construct(const FArguments& InArgs, TUniquePtr<FImGuiDrawer> InImGuiDrawer);
 
-	~SImGuiBaseWidget();
+	~SImGuiHostWidget();
 
 	//----------------------------------------------------------------------------------------------------
 	// SWidget overrides

@@ -85,6 +85,6 @@ private:
 
 	std::string IniFilename;
   TUniquePtr<FImGuiDrawer> DrawerObj;
-	TWeakPtr<class SImGuiBaseWidget> SlateHostWidget;
-	friend class SImGuiBaseWidget;
+	TWeakPtr<class SImGuiHostWidget> SlateHostWidget;
+	friend class SImGuiHostWidget;
 };

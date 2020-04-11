@@ -1,7 +1,7 @@
 // Distributed under the MIT License (MIT) (see accompanying LICENSE file)
 
 
-#include "Widgets/SImGuiBaseWidget.h"
+#include "Widgets/SImGuiHostWidget.h"
 #include "UnrealImGui.h"
 #include "SImGuiCanvasControl.h"
 
@@ -55,7 +55,7 @@ namespace CVars
 #endif // IMGUI_WIDGET_DEBUG
 
 
-void SImGuiBaseWidget::Construct(const FArguments& InArgs, TUniquePtr<FImGuiDrawer> InImGuiDrawer)
+void SImGuiHostWidget::Construct(const FArguments& InArgs, TUniquePtr<FImGuiDrawer> InImGuiDrawer)
 {
 	checkf(InArgs._ModuleManager, TEXT("Null Module Manager argument"));
 
@@ -79,13 +79,13 @@ void SImGuiBaseWidget::Construct(const FArguments& InArgs, TUniquePtr<FImGuiDraw
 
 	ChildSlot
 	[
-		SAssignNew(CanvasControlWidget, SImGuiCanvasControl).OnTransformChanged(this, &SImGuiBaseWidget::SetImGuiTransform)
+		SAssignNew(CanvasControlWidget, SImGuiCanvasControl).OnTransformChanged(this, &SImGuiHostWidget::SetImGuiTransform)
 	];
 
 	ImGuiTransform = CanvasControlWidget->GetTransform();
 }
 
-SImGuiBaseWidget::~SImGuiBaseWidget()
+SImGuiHostWidget::~SImGuiHostWidget()
 {
 	// Stop listening for settings change.
 	UnregisterImGuiSettingsDelegates();
@@ -98,65 +98,72 @@ SImGuiBaseWidget::~SImGuiBaseWidget()
     }
 }
 
-void SImGuiBaseWidget::Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime)
+void SImGuiHostWidget::Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime)
 {
-	Super::Tick(AllottedGeometry, InCurrentTime, InDeltaTime);
-    
-    // Manually update ImGui context to minimise lag between creating and rendering ImGui output. This will also
-	// keep frame tearing at minimum because it is executed at the very end of the frame.
-	ContextProxy->Tick(InDeltaTime, AllottedGeometry.GetAbsoluteSize());
+  Super::Tick(AllottedGeometry, InCurrentTime, InDeltaTime);
 
-    ImGuiRenderTransform = ImGuiTransform;
-    UpdateMouseCursor();
-	
-    //HandleWindowFocusLost();
-    // We can use window foreground status to notify about application losing or receiving focus. In some situations
-    // we get mouse leave or enter events, but they are only sent if mouse pointer is inside of the viewport.
-    //if (bInputEnabled && HasKeyboardFocus())
-    //{
-    //    TSharedPtr<SWindow> ParentWindow = FSlateApplication::Get().FindWidgetWindow(AsShared());
-    //    //if (bForegroundWindow != ParentWindow->IsActive())
-    //    if (ParentWindow->GetNativeWindow()->IsForegroundWindow())
-    //    {
-    //        InputHandler->OnKeyboardInputEnabled();
-    //        InputHandler->OnGamepadInputEnabled();
-    //    }
-    //    else
-    //    {
-    //        InputHandler->OnKeyboardInputDisabled();
-    //        InputHandler->OnGamepadInputDisabled();
-    //    }
-    //}
+  // Manually update ImGui context to minimise lag between creating and rendering ImGui output. This will also
+  // keep frame tearing at minimum because it is executed at the very end of the frame.
+  ContextProxy->Tick(InDeltaTime, AllottedGeometry.GetAbsoluteSize());
+
+  ImGuiRenderTransform = ImGuiTransform;
+  UpdateMouseCursor();
+
+  // HandleWindowFocusLost();
+  // We can use window foreground status to notify about application losing or receiving focus. In some situations
+  // we get mouse leave or enter events, but they are only sent if mouse pointer is inside of the viewport.
+  if (bInputEnabled && HasKeyboardFocus()) {
+    TSharedPtr<SWindow> ParentWindow = FSlateApplication::Get().FindWidgetWindow(AsShared());
+    // if (bForegroundWindow != ParentWindow->IsActive())
+    if (ParentWindow->GetNativeWindow()->IsForegroundWindow()) {
+      InputHandler->OnKeyboardInputEnabled();
+      InputHandler->OnGamepadInputEnabled();
+    }
+    else {
+      InputHandler->OnKeyboardInputDisabled();
+      InputHandler->OnGamepadInputDisabled();
+    }
+  }
+  {
+		FImGuiInputState& inputState = ContextProxy->GetInputState();
+		inputState.ClearUpdateState();
+
+    inputState.SetKeyboardNavigationEnabled(ModuleManager->GetProperties().IsKeyboardNavigationEnabled());
+    inputState.SetGamepadNavigationEnabled(ModuleManager->GetProperties().IsGamepadNavigationEnabled());
+
+    const auto& PlatformApplication = FSlateApplication::Get().GetPlatformApplication();
+		inputState.SetGamepad(PlatformApplication.IsValid() && PlatformApplication->IsGamepadAttached());
+  }
 }
 
-FReply SImGuiBaseWidget::OnKeyChar(const FGeometry& MyGeometry, const FCharacterEvent& CharacterEvent)
+FReply SImGuiHostWidget::OnKeyChar(const FGeometry& MyGeometry, const FCharacterEvent& CharacterEvent)
 {
 	return InputHandler->OnKeyChar(CharacterEvent);
 }
 
-FReply SImGuiBaseWidget::OnKeyDown(const FGeometry& MyGeometry, const FKeyEvent& KeyEvent)
+FReply SImGuiHostWidget::OnKeyDown(const FGeometry& MyGeometry, const FKeyEvent& KeyEvent)
 {
 	UpdateCanvasControlMode(KeyEvent);
 	return InputHandler->OnKeyDown(KeyEvent);
 }
 
-FReply SImGuiBaseWidget::OnKeyUp(const FGeometry& MyGeometry, const FKeyEvent& KeyEvent)
+FReply SImGuiHostWidget::OnKeyUp(const FGeometry& MyGeometry, const FKeyEvent& KeyEvent)
 {
 	UpdateCanvasControlMode(KeyEvent);
 	return InputHandler->OnKeyUp(KeyEvent);
 }
 
-FReply SImGuiBaseWidget::OnAnalogValueChanged(const FGeometry& MyGeometry, const FAnalogInputEvent& AnalogInputEvent)
+FReply SImGuiHostWidget::OnAnalogValueChanged(const FGeometry& MyGeometry, const FAnalogInputEvent& AnalogInputEvent)
 {
 	return InputHandler->OnAnalogValueChanged(AnalogInputEvent);
 }
 
-FReply SImGuiBaseWidget::OnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
+FReply SImGuiHostWidget::OnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
 {
 	return InputHandler->OnMouseButtonDown(MouseEvent).LockMouseToWidget(SharedThis(this));
 }
 
-FReply SImGuiBaseWidget::OnMouseButtonDoubleClick(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
+FReply SImGuiHostWidget::OnMouseButtonDoubleClick(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
 {
 	return InputHandler->OnMouseButtonDoubleClick(MouseEvent).LockMouseToWidget(SharedThis(this));
 }
@@ -169,7 +176,7 @@ namespace
 	}
 }
 
-FReply SImGuiBaseWidget::OnMouseButtonUp(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
+FReply SImGuiHostWidget::OnMouseButtonUp(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
 {
 	FReply Reply = InputHandler->OnMouseButtonUp(MouseEvent);
 	if (!NeedMouseLock(MouseEvent))
@@ -179,17 +186,17 @@ FReply SImGuiBaseWidget::OnMouseButtonUp(const FGeometry& MyGeometry, const FPoi
 	return Reply;
 }
 
-FReply SImGuiBaseWidget::OnMouseWheel(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
+FReply SImGuiHostWidget::OnMouseWheel(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
 {
 	return InputHandler->OnMouseWheel(MouseEvent);
 }
 
-FReply SImGuiBaseWidget::OnMouseMove(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
+FReply SImGuiHostWidget::OnMouseMove(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
 {
 	return InputHandler->OnMouseMove(TransformScreenPointToImGui(MyGeometry, MouseEvent.GetScreenSpacePosition()), MouseEvent);
 }
 
-FReply SImGuiBaseWidget::OnFocusReceived(const FGeometry& MyGeometry, const FFocusEvent& FocusEvent)
+FReply SImGuiHostWidget::OnFocusReceived(const FGeometry& MyGeometry, const FFocusEvent& FocusEvent)
 {
 	Super::OnFocusReceived(MyGeometry, FocusEvent);
 
@@ -202,7 +209,7 @@ FReply SImGuiBaseWidget::OnFocusReceived(const FGeometry& MyGeometry, const FFoc
 	return FReply::Handled();
 }
 
-void SImGuiBaseWidget::OnFocusLost(const FFocusEvent& FocusEvent)
+void SImGuiHostWidget::OnFocusLost(const FFocusEvent& FocusEvent)
 {
 	Super::OnFocusLost(FocusEvent);
 
@@ -212,7 +219,7 @@ void SImGuiBaseWidget::OnFocusLost(const FFocusEvent& FocusEvent)
 	InputHandler->OnGamepadInputDisabled();
 }
 
-void SImGuiBaseWidget::OnMouseEnter(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
+void SImGuiHostWidget::OnMouseEnter(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
 {
 	Super::OnMouseEnter(MyGeometry, MouseEvent);
 
@@ -221,7 +228,7 @@ void SImGuiBaseWidget::OnMouseEnter(const FGeometry& MyGeometry, const FPointerE
 	InputHandler->OnMouseInputEnabled();
 }
 
-void SImGuiBaseWidget::OnMouseLeave(const FPointerEvent& MouseEvent)
+void SImGuiHostWidget::OnMouseLeave(const FPointerEvent& MouseEvent)
 {
 	Super::OnMouseLeave(MouseEvent);
 
@@ -230,40 +237,40 @@ void SImGuiBaseWidget::OnMouseLeave(const FPointerEvent& MouseEvent)
 	InputHandler->OnMouseInputDisabled();
 }
 
-FReply SImGuiBaseWidget::OnTouchStarted(const FGeometry& MyGeometry, const FPointerEvent& TouchEvent)
+FReply SImGuiHostWidget::OnTouchStarted(const FGeometry& MyGeometry, const FPointerEvent& TouchEvent)
 {
 	return InputHandler->OnTouchStarted(TransformScreenPointToImGui(MyGeometry, TouchEvent.GetScreenSpacePosition()), TouchEvent);
 }
 
-FReply SImGuiBaseWidget::OnTouchMoved(const FGeometry& MyGeometry, const FPointerEvent& TouchEvent)
+FReply SImGuiHostWidget::OnTouchMoved(const FGeometry& MyGeometry, const FPointerEvent& TouchEvent)
 {
 	return InputHandler->OnTouchMoved(TransformScreenPointToImGui(MyGeometry, TouchEvent.GetScreenSpacePosition()), TouchEvent);
 }
 
-FReply SImGuiBaseWidget::OnTouchEnded(const FGeometry& MyGeometry, const FPointerEvent& TouchEvent)
+FReply SImGuiHostWidget::OnTouchEnded(const FGeometry& MyGeometry, const FPointerEvent& TouchEvent)
 {
 	UpdateVisibility();
 	return InputHandler->OnTouchEnded(TransformScreenPointToImGui(MyGeometry, TouchEvent.GetScreenSpacePosition()), TouchEvent);
 }
 
-void SImGuiBaseWidget::RegisterImGuiSettingsDelegates()
+void SImGuiHostWidget::RegisterImGuiSettingsDelegates()
 {
 	auto& Settings = ModuleManager->GetSettings();
 
 	if (!Settings.OnUseSoftwareCursorChanged.IsBoundToObject(this))
 	{
-		Settings.OnUseSoftwareCursorChanged.AddRaw(this, &SImGuiBaseWidget::SetHideMouseCursor);
+		Settings.OnUseSoftwareCursorChanged.AddRaw(this, &SImGuiHostWidget::SetHideMouseCursor);
 	}
 }
 
-void SImGuiBaseWidget::UnregisterImGuiSettingsDelegates()
+void SImGuiHostWidget::UnregisterImGuiSettingsDelegates()
 {
 	auto& Settings = ModuleManager->GetSettings();
 
 	Settings.OnUseSoftwareCursorChanged.RemoveAll(this);
 }
 
-void SImGuiBaseWidget::SetHideMouseCursor(bool bHide)
+void SImGuiHostWidget::SetHideMouseCursor(bool bHide)
 {
 	if (bHideMouseCursor != bHide)
 	{
@@ -272,7 +279,7 @@ void SImGuiBaseWidget::SetHideMouseCursor(bool bHide)
 	}
 }
 
-void SImGuiBaseWidget::UpdateVisibility()
+void SImGuiHostWidget::UpdateVisibility()
 {
 	// Make sure that we do not occlude other widgets, if input is disabled or if mouse is set to work in a transparent
 	// mode (hit-test invisible).
@@ -282,7 +289,7 @@ void SImGuiBaseWidget::UpdateVisibility()
         *ContextProxy->GetName(), *GetVisibility().ToString());
 }
 
-void SImGuiBaseWidget::UpdateMouseCursor()
+void SImGuiHostWidget::UpdateMouseCursor()
 {
 	if (!bHideMouseCursor)
 	{
@@ -295,13 +302,13 @@ void SImGuiBaseWidget::UpdateMouseCursor()
 }
 
 
-void SImGuiBaseWidget::UpdateCanvasControlMode(const FInputEvent& InputEvent)
+void SImGuiHostWidget::UpdateCanvasControlMode(const FInputEvent& InputEvent)
 {
 	CanvasControlWidget->SetActive(InputEvent.IsLeftAltDown() && InputEvent.IsLeftShiftDown());
 }
 
 
-FVector2D SImGuiBaseWidget::TransformScreenPointToImGui(const FGeometry& MyGeometry, const FVector2D& Point) const
+FVector2D SImGuiHostWidget::TransformScreenPointToImGui(const FGeometry& MyGeometry, const FVector2D& Point) const
 {
 	const FSlateRenderTransform ImGuiToScreen = ImGuiTransform.Concatenate(MyGeometry.GetAccumulatedRenderTransform());
 	return ImGuiToScreen.Inverse().TransformPoint(Point);
@@ -317,7 +324,7 @@ namespace
 	}
 }
 
-int32 SImGuiBaseWidget::OnPaint(const FPaintArgs& Args, const FGeometry& AllottedGeometry, const FSlateRect& MyClippingRect,
+int32 SImGuiHostWidget::OnPaint(const FPaintArgs& Args, const FGeometry& AllottedGeometry, const FSlateRect& MyClippingRect,
 	FSlateWindowElementList& OutDrawElements, int32 LayerId, const FWidgetStyle& WidgetStyle, bool bParentEnabled) const
 {
 	// Calculate transform from ImGui to screen space. Rounding translation is necessary to keep it pixel-perfect

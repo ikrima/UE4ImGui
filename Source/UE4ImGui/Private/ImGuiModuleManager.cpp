@@ -15,7 +15,7 @@
 #if WITH_EDITORONLY_DATA
 #include "LevelEditor.h"
 #endif
-#include "Widgets/SImGuiBaseWidget.h"
+#include "Widgets/SImGuiHostWidget.h"
 #include "Framework/Application/SlateApplication.h"
 
 
@@ -72,7 +72,7 @@ void FImGuiModuleManager::AddNewImGuiWindow(const FString& InName, TUniquePtr<FI
 		  .VAlign(EVerticalAlignment::VAlign_Fill)
 		  .HAlign(EHorizontalAlignment::HAlign_Fill)
 		  [
-	      SNew(SImGuiBaseWidget, MoveTemp(InImGuiDrawer))
+	      SNew(SImGuiHostWidget, MoveTemp(InImGuiDrawer))
 	      .ModuleManager(this)
 	      .ContextName(InName)
 	      // To correctly clip borders. Using SScissorRectBox in older versions seems to be not necessary.

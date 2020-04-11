@@ -11,7 +11,7 @@
 #include "Misc/Paths.h"
 #include "GenericPlatform/GenericPlatformFile.h"
 #include "ImGuiModule.h"
-#include "Widgets/SImGuiBaseWidget.h"
+#include "Widgets/SImGuiHostWidget.h"
 #include "Framework/Application/SlateApplication.h"
 
 
@@ -384,7 +384,7 @@ void FImGuiContextProxy::ShowImGuiDbgInputState() const
 
 void FImGuiContextProxy::ShowSlateHostDbgWindow() const
 {
-  TSharedPtr<SImGuiBaseWidget> slateHost = SlateHostWidget.Pin();
+  TSharedPtr<SImGuiHostWidget> slateHost = SlateHostWidget.Pin();
   ImGui::Spacing();
 
   TwoColumns::CollapsingGroup("Context", [&]() { TwoColumns::Value("Context Name", *this->GetName()); });

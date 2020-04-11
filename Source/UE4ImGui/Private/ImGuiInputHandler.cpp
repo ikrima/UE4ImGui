@@ -316,7 +316,7 @@ void UImGuiInputHandler::Initialize(FImGuiModuleManager* InModuleManager, FImGui
 {
 	ModuleManager = InModuleManager;
 	ContextIndex = -1;
-    ContextProxy = &InContextProxy;
+	ContextProxy = &InContextProxy;
 	InputState = &ContextProxy->GetInputState();
 
 	auto& Settings = ModuleManager->GetSettings();
